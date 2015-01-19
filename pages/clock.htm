@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html><head><title>Color of Time</title>
+<meta charset="UTF-8">
+<!--http://bickov.com/projects/the-moment-of-color/start2.html-->
+<link rel=stylesheet href="../css/style.css" type="text/css">
+
+<script type="text/javascript">		
+var visibleInfo=1;
+function toggleInfo()
+{//toggles visibility of info, 0=hidden
+	if (visibleInfo) 
+	{//set hidden
+		visibleInfo=0;
+		document.getElementById('clockInfo').hidden = true;
+	}
+	else 
+	{//set visible
+		visibleInfo=1;
+		document.getElementById('clockInfo').hidden = false;
+	}
+}
+
+function updateColorClock() 
+{
+	//Gets the current time
+	var now = new Date();
+	var hours = now.getHours();
+	var minutes = now.getMinutes();
+	var dispSeconds = now.getSeconds();
+	//var seconds = now.getSeconds() + (now.getMilliseconds()/1000); //this line uses milliseconds for the full color space
+	var seconds = now.getSeconds();
+	
+	// Format hours, minutes and seconds
+	if (hours < 10) hours = "0" + hours;
+	if (minutes < 10) minutes = "0" + minutes;
+	if (dispSeconds < 10) dispSeconds = "0" + dispSeconds;
+	
+	var maxHours=24;
+	var maxMinutes=60;
+	var maxSeconds=60;
+	var maxHex=255;
+	
+	var  red = Math.floor((hours/maxHours)*maxHex);
+	var  green = Math.floor((minutes/maxMinutes)*maxHex);
+	var  blue = Math.floor((seconds/maxSeconds)*maxHex);
+	
+	var backColor='rgb('+red+','+green+','+blue+')';
+	var foreColor='rgb('+(maxHex-red)+','+(maxHex-green)+','+(maxHex-blue)+')';
+	
+	document.body.style.background = backColor;
+	document.body.style.color = foreColor;
+	
+	var links = document.getElementsByTagName("a");
+	for (var ii = 0; ii < links.length; ii++)
+	{
+		links[ii].style.color = foreColor;
+	}
+	document.getElementById('colorClock').innerHTML = ( hours + ':' + minutes + ':' + dispSeconds );
+
+	document.getElementById('colorInfo').innerHTML = (
+	'Foreground color: '+foreColor+
+	'<br>Background color: '+backColor
+	);
+	var t=setTimeout("updateColorClock()", 100); //loop 1/10 sec, 1 sec loops caused occasional 2 second jumps
+}
+</script>
+</head>
+<body class='center'>
+
+
+<div id="colorClock"></div>
+<div id="clockInfo"><span id="colorInfo"></span>
+<p>Convertes time into RGB color value.  I got this idea from <a href="http://bickov.com/projects/the-moment-of-color/start2.html">here</a>.</p></div>
+<span class="bottom"><a id="displayText" href="javascript:toggleInfo();">Info</a></span>
+
+
+<script type="text/javascript">	
+toggleInfo(); //toggle info off
+
+updateColorClock();
+
+</script>
+</body>
+</html>

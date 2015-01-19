@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html><head><title>Reddit Search</title>
+<meta charset="UTF-8">
+<link rel=stylesheet href="../css/style.css" type="text/css">
+<style type="text/css">
+.buttons 
+{
+	width: 9em;
+}
+.outputs 
+{
+	//width: 80%;
+}
+.labels 
+{
+	width: 12%;
+	//min-width: 5em;
+	text-align: right;
+}
+</style>
+</head>
+<body class="reading" onLoad="gen()">
+
+<form name="mainform">
+<table>
+	<tr>
+		<td>title:</td>
+		<td><input type="text" name="title" style="width:40em" onkeyup="genlink()" value=""></td>
+	</tr>
+	<tr>
+		<td>author:</td>
+		<td><input type="text" name="author" style="width:40em" onkeyup="genlink()" value=""></td>
+	</tr>	
+	<tr>
+		<td>subreddit:</td>
+		<td><input type="text" name="subreddit" style="width:40em" onkeyup="genlink()" value=""></td>
+	</tr>	
+	<tr>
+		<td>selftext:</td>
+		<td><input type="text" name="selftext" style="width:40em" onkeyup="genlink()" value=""></td>
+	</tr>
+	<tr>
+		<td>all above:</td>
+		<td><input type="text" name="text" style="width:40em" onkeyup="genlink()" value=""></td>
+	</tr>	
+	<tr>
+		<td>url:</td>
+		<td><input type="text" name="surl" style="width:40em" onkeyup="genlink()" value=""></td>
+	</tr>	
+	<tr>
+		<td>site:</td>
+		<td><input type="text" name="site" style="width:40em" onkeyup="genlink()" value=""></td>
+	</tr>		
+	<tr>
+		<td>NSFW:</td>
+		<td><select name="nsfw" onChange="genlink()">
+		<option value="0">All</option>
+		<option value="1">Only NSFW</option>
+		<option value="2">No NSFW</option>
+		</select>
+		</td>
+	</tr>
+	<tr>
+		<td>Self:</td>
+		<td><select name="self" onChange="genlink()">
+		<option value="0">All</option>
+		<option value="1">Only Self</option>
+		<option value="2">No Self</option>
+		</select>
+		</td>
+	</tr>	
+	<tr>
+		<td>Sort:</td>
+		<td><select name="sort" onChange="genlink()">
+		<option value="0">relevance</option>
+		<option value="1">top</option>
+		<option value="2">new</option>
+		<option value="3">hot</option>
+		<option value="4">comments</option>
+		</select>
+		</td>
+	</tr>	
+	<tr>
+		<td>Time:</td>
+		<td><select name="time" onChange="genlink()">
+		<option value="0">all</option>
+		<option value="1">hour</option>
+		<option value="2">day</option>
+		<option value="3">week</option>
+		<option value="4">month</option>
+		<option value="5">year</option>
+		</select>
+		</td>
+	</tr>	
+	<tr>
+		<td><a id="url" href="http://reddit.com/">Search&nbsp;</td>
+	</tr>
+</table>
+
+</form>
+<script type="text/javascript">
+<!-- 
+
+function genlink()
+{
+	var base="http://www.reddit.com/search?q=";
+	var title=document.mainform.title.value;
+	var author=document.mainform.author.value;
+	var subreddit=document.mainform.subreddit.value;
+	var selftext=document.mainform.selftext.value;
+	var text=document.mainform.text.value;
+	var surl=document.mainform.surl.value;
+	var site=document.mainform.site.value;
+	var nsfw=document.mainform.nsfw.value;
+	var self=document.mainform.self.value;
+	var sortby=document.mainform.sort.value;
+	var time=document.mainform.time.value;
+	
+	var url=base;
+	
+	if (title) {url += "title:'"+title+"' ";}
+	if (author) {url += "author:'"+author+"' ";}
+	if (subreddit) {url += "subreddit:'"+subreddit+"' ";}
+	if (selftext) {url += "selftext:'"+selftext+"' ";}
+	if (text) {url += "text:'"+text+"' ";}
+	if (surl) {url += "url:'"+surl+"' ";}
+	if (site) {url += "site:'"+site+"' ";}
+	
+	if (nsfw==1) {url += "over18:1 ";}
+	if (nsfw==2) {url += "over18:0 ";}
+	
+	if (self==1) {url += "is_self:1 ";}
+	if (self==2) {url += "is_self:0 ";}
+	
+	if (sortby==1) {url += "&sort=top";}
+	if (sortby==2) {url += "&sort=new";}
+	if (sortby==3) {url += "&sort=hot";}
+	if (sortby==4) {url += "&sort=comments";}
+	
+	if (time==1) {url += "&t=hour";}
+	if (time==2) {url += "&t=day";}
+	if (time==3) {url += "&t=week";}
+	if (time==4) {url += "&t=month";}	
+	if (time==5) {url += "&t=year";}	
+	
+	document.getElementById('url').href=url;
+}
+
+-->
+</script>
+
+<hr>
+<p>Reddit's default search is pretty terrible.  It has some built in functions to make it better, but no interface to use them, you just have to memorize the text commands.  This just generates a link to a Reddit search, using the more advanced features.  See their <a href="http://www.reddit.com/wiki/search">FAQ for an explanation of the fields</a>.
+
+</p>
+
+</body></html>

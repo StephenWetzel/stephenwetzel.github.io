@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html><head><title>Cryptographic Hash Generator</title>
+<meta charset="UTF-8">
+<link rel=stylesheet href="../css/style.css" type="text/css">
+<style type="text/css">
+.buttons 
+{
+	width: 9em;
+}
+.outputs 
+{
+	//width: 80%;
+}
+.labels 
+{
+	width: 12%;
+	text-align: right;
+}
+
+
+</style>
+</head>
+<body class="reading">
+
+<form name="mainform">
+<table style="width:100%; min-width:50em;"><tr><td class="labels">&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td class="labels">Input: </td><td class="outputs"><textarea name="inputtext" rows="2" style="width:100%" onkeyup="code()">Input</textarea></td></tr>
+<tr><td class="labels">Allowed Characters: </td><td class="outputs"><input type="text" name="allowedchars" style="width:100%" value="abcdefghijklmnopqrstuvwxyz" onkeyup="code()"></td></tr>
+
+<tr><td class="labels">&nbsp;</td><td>
+<input type="button" value="Add lower" class="buttons" onclick="add(lower)">
+<input type="button" value="Add UPPER" class="buttons"  onclick="add(upper)">
+<input type="button" value="Add Digits" class="buttons"  onclick="add(digits)">
+<input type="button" value="Add Special" class="buttons" onclick="add(spec)">
+<input type="button" value="UPPER HEX" class="buttons" onclick="change(uphex)">
+</td></tr><tr><td class="labels">&nbsp;</td><td>
+<input type="button" value="Remove lower" class="buttons" onclick="removelower()">
+<input type="button" value="Remove UPPER" class="buttons" onclick="removeupper()">
+<input type="button" value="Remove Digits" class="buttons" onclick="removedigits()">
+<input type="button" value="Remove Special" class="buttons" onclick="removespec()">
+<input type="button" value="lower hex" class="buttons" onclick="change(lowhex)">
+</td></tr>
+
+<tr><td class="labels">MD5: </td><td class="outputs"><textarea name="md5" rows="2" style="width:100%">MD5</textarea></td></tr>
+<tr><td class="labels">SHA-1: </td><td class="outputs"><textarea name="sha1" rows="2" style="width:100%">SHA-1</textarea></td></tr>
+<tr><td class="labels">SHA-256: </td><td class="outputs"><textarea name="sha256" rows="2" style="width:100%">SHA-256</textarea></td></tr>
+<tr><td class="labels">SHA-512: </td><td class="outputs"><textarea name="sha512" rows="2" style="width:100%">SHA-512</textarea></td></tr>
+<tr><td class="labels">RIPEMD-160: </td><td class="outputs"><textarea name="r160" rows="2" style="width:100%">RIPEMD-160</textarea></td></tr>
+
+</table>
+</form>
+<script src="../js/hashfunctions.js"></script>
+<script type="text/javascript">
+<!-- 
+var lower = "abcdefghijklmnopqrstuvwxyz";
+var upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+var digits = "0123456789";
+var spec = "`~!@#$%^&*()-_=+[{]}\\|;:'\",<.>/?";
+var uphex = "0123456789ABCDEF";
+var lowhex = "0123456789abcdef";
+
+
+function code()
+{
+	var inputtext=document.mainform.inputtext.value
+	var allowedchars=removeduplicates(document.mainform.allowedchars.value)
+	
+	document.mainform.sha512.value=any_sha512(inputtext,allowedchars)
+	document.mainform.sha256.value=any_sha256(inputtext,allowedchars)
+	document.mainform.sha1.value=any_sha1(inputtext,allowedchars)
+	document.mainform.md5.value=any_md5(inputtext,allowedchars)
+	document.mainform.r160.value=any_rmd160(inputtext,allowedchars)
+	
+	document.mainform.allowedchars.value=allowedchars
+		
+}
+
+function removeduplicates(x)
+{//sorts and then removes duplicate entries from the array x
+	var chars=x.split("")
+	chars.sort()
+	var results = [];
+	for (var i = 0; i < chars.length; i++) 
+	{
+		if (chars[i] != chars[i+1]) 
+		{
+			results.push(chars[i]);
+		}
+	}
+	x=results.join("")
+	
+	return x;
+	
+}
+
+
+function add(x)
+{
+	var allowedchars=document.mainform.allowedchars.value
+	allowedchars+=x
+	document.mainform.allowedchars.value=removeduplicates(allowedchars)
+	code()
+}
+
+function change(x)
+{
+	var allowedchars=document.mainform.allowedchars.value
+	allowedchars+=x
+	document.mainform.allowedchars.value=removeduplicates(x)
+	code()
+}
+
+
+
+function removelower()
+{
+	var allowedchars=document.mainform.allowedchars.value
+	var output = allowedchars.replace(/[a-z]/g,"")
+	document.mainform.allowedchars.value=removeduplicates(output)
+	code()
+}
+function removeupper()
+{
+	var allowedchars=document.mainform.allowedchars.value
+	var output = allowedchars.replace(/[A-Z]/g,"")
+	document.mainform.allowedchars.value=removeduplicates(output)
+	code()
+}
+function removedigits()
+{
+	var allowedchars=document.mainform.allowedchars.value
+	var output = allowedchars.replace(/\d/g,"")
+	document.mainform.allowedchars.value=removeduplicates(output)
+	code()
+}
+function removespec()
+{
+	var allowedchars=document.mainform.allowedchars.value
+	var output = allowedchars.replace(/[^a-zA-Z0-9]/g,"")
+	document.mainform.allowedchars.value=removeduplicates(output)
+	code()
+}
+
+-->
+</script>
+
+<hr>
+<p>Some hash functions.  Most of the code is from <a href="http://pajhome.org.uk/crypt/md5/scripts.html">here</a>.</p>
+
+</body></html>

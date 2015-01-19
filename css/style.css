@@ -1,0 +1,58 @@
+#colorClock
+{
+	font-family: mono;
+	font-size: 1000%;
+	text-align: center;
+}
+
+.bottom
+{
+	position: absolute;
+	bottom: 1em;
+}
+
+#clockInfo
+{
+	visibility: true;
+	text-align: center;
+
+	bottom: 3em;
+	margin-top: 10em;
+}
+
+
+a.stealth:link {color:#00aa00; text-decoration:none;}
+
+.noborder { border-style: none;}
+.nobreak { padding: 0px; border: 0px; margin: 0px; }
+
+.over { text-decoration: overline; }
+.bold { font-weight: bold; font-size: 100%; }
+.under { text-decoration: underline; }
+
+.left { text-align: left; }
+.center { text-align: center; }
+.right { text-align: right; }
+
+#banner
+{
+	background: #660066;
+	margin:0px;
+	padding:0px;
+}
+
+.nojs
+{
+	background-color: #000000;
+	color: #FFFF00;
+	font-weight: bold;
+	font-size: 120%;
+	text-align: center;
+	border: 0px;
+	border-style: solid;
+	padding-top: 0px;
+	margin-top: 0px;
+}
+
+
+

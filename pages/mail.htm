@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html><head><title>Mail</title>
+<meta charset="UTF-8">
+<link rel=stylesheet href="../css/style.css" type="text/css">
+<style type="text/css">
+.buttons 
+{
+	width: 9em;
+}
+.outputs 
+{
+	//width: 80%;
+}
+.labels 
+{
+	width: 12%;
+	//min-width: 5em;
+	text-align: right;
+}
+
+
+</style>
+</head>
+<body class="reading" onLoad="gen()">
+
+<form name="mainform">
+<table>
+	<tr class="center" style="font-size: 110%; font-weight: bold;"><td>First Name&nbsp;</td><td>Last Name&nbsp;</td><td>Username <label><input type="checkbox" name="addrand" onclick="gen()">Random&nbsp;</label></td><td>Password&nbsp;</td><td>email&nbsp;</td><td>Alt email <input type="button" value="New" onclick="genalt()">&nbsp;</td><td>Inbox&nbsp;</td></tr>
+	<tr><td><input type="text" name="first1" style="width:6em" value="Reginald">&nbsp;</td><td><input type="text" name="last1" style="width:7em" value="Montgomery">&nbsp;</td><td><input type="text" name="user1" style="width:12em" value="ReginaldMontgomery">&nbsp;</td><td><input type="text" name="pass1" style="width:11em" value="iny63m9s">&nbsp;</td><td><input type="text" name="email1" style="width:20em" value="ReginaldMontgomery@mailinator.com">&nbsp;</td><td><input type="text" name="alt1" style="width:22em" value="ReginaldMontgomery@thisisnotmyrealemail.com">&nbsp;</td><td name="url1"><a id="url1" href="http://monkeys.mailinator.com/">Inbox&nbsp;</td></tr>
+	<tr><td><input type="text" name="first2" style="width:6em" value="Reginald">&nbsp;</td><td><input type="text" name="last2" style="width:7em" value="Montgomery">&nbsp;</td><td><input type="text" name="user2" style="width:12em" value="ReginaldMontgomery">&nbsp;</td><td><input type="text" name="pass2" style="width:11em" value="iny63m9s">&nbsp;</td><td><input type="text" name="email2" style="width:20em" value="ReginaldMontgomery@mailinator.com">&nbsp;</td><td><input type="text" name="alt2" style="width:22em" value="ReginaldMontgomery@thisisnotmyrealemail.com">&nbsp;</td><td name="url2"><a id="url2" href="http://www.mailinator.com/">Inbox&nbsp;</td></tr>
+	<tr><td><input type="text" name="first3" style="width:6em" value="Reginald">&nbsp;</td><td><input type="text" name="last3" style="width:7em" value="Montgomery">&nbsp;</td><td><input type="text" name="user3" style="width:12em" value="ReginaldMontgomery">&nbsp;</td><td><input type="text" name="pass3" style="width:11em" value="iny63m9s">&nbsp;</td><td><input type="text" name="email3" style="width:20em" value="ReginaldMontgomery@mailinator.com">&nbsp;</td><td><input type="text" name="alt3" style="width:22em" value="ReginaldMontgomery@thisisnotmyrealemail.com">&nbsp;</td><td name="url3"><a id="url3" href="http://monkeys.mailinator.com/">Inbox&nbsp;</td></tr>
+	<tr><td><input type="text" name="first4" style="width:6em" value="Reginald">&nbsp;</td><td><input type="text" name="last4" style="width:7em" value="Montgomery">&nbsp;</td><td><input type="text" name="user4" style="width:12em" value="ReginaldMontgomery">&nbsp;</td><td><input type="text" name="pass4" style="width:11em" value="iny63m9s">&nbsp;</td><td><input type="text" name="email4" style="width:20em" value="ReginaldMontgomery@mailinator.com">&nbsp;</td><td><input type="text" name="alt4" style="width:22em" value="ReginaldMontgomery@thisisnotmyrealemail.com">&nbsp;</td><td name="url4"><a id="url4" href="http://monkeys.mailinator.com/">Inbox&nbsp;</td></tr>	
+	<tr><td><input type="text" name="first5" style="width:6em" value="Reginald">&nbsp;</td><td><input type="text" name="last5" style="width:7em" value="Montgomery">&nbsp;</td><td><input type="text" name="user5" style="width:12em" value="ReginaldMontgomery">&nbsp;</td><td><input type="text" name="pass5" style="width:11em" value="iny63m9s">&nbsp;</td><td><input type="text" name="email5" style="width:20em" value="ReginaldMontgomery@mailinator.com">&nbsp;</td><td><input type="text" name="alt5" style="width:22em" value="ReginaldMontgomery@thisisnotmyrealemail.com">&nbsp;</td><td name="url5"><a id="url5" href="http://monkeys.mailinator.com/">Inbox&nbsp;</td></tr>	
+	<tr><td><input type="text" name="first6" style="width:6em" value="Reginald">&nbsp;</td><td><input type="text" name="last6" style="width:7em" value="Montgomery">&nbsp;</td><td><input type="text" name="user6" style="width:12em" value="ReginaldMontgomery">&nbsp;</td><td><input type="text" name="pass6" style="width:11em" value="iny63m9s">&nbsp;</td><td><input type="text" name="email6" style="width:20em" value="ReginaldMontgomery@mailinator.com">&nbsp;</td><td><input type="text" name="alt6" style="width:22em" value="ReginaldMontgomery@thisisnotmyrealemail.com">&nbsp;</td><td name="url6"><a id="url6" href="http://monkeys.mailinator.com/">Inbox&nbsp;</td></tr>
+	<tr><td><input type="text" name="first7" style="width:6em" value="Reginald">&nbsp;</td><td><input type="text" name="last7" style="width:7em" value="Montgomery">&nbsp;</td><td><input type="text" name="user7" style="width:12em" value="ReginaldMontgomery">&nbsp;</td><td><input type="text" name="pass7" style="width:11em" value="iny63m9s">&nbsp;</td><td><input type="text" name="email7" style="width:20em" value="ReginaldMontgomery@mailinator.com">&nbsp;</td><td><input type="text" name="alt7" style="width:22em" value="ReginaldMontgomery@thisisnotmyrealemail.com">&nbsp;</td><td name="url7"><a id="url7" href="http://monkeys.mailinator.com/">Inbox&nbsp;</td></tr>
+	<tr><td><input type="text" name="first8" style="width:6em" value="Reginald">&nbsp;</td><td><input type="text" name="last8" style="width:7em" value="Montgomery">&nbsp;</td><td><input type="text" name="user8" style="width:12em" value="ReginaldMontgomery">&nbsp;</td><td><input type="text" name="pass8" style="width:11em" value="iny63m9s">&nbsp;</td><td><input type="text" name="email8" style="width:20em" value="ReginaldMontgomery@mailinator.com">&nbsp;</td><td><input type="text" name="alt8" style="width:22em" value="ReginaldMontgomery@thisisnotmyrealemail.com">&nbsp;</td><td name="url8"><a id="url8" href="http://monkeys.mailinator.com/">Inbox&nbsp;</td></tr>
+</table>
+<input type="button" value="Generate New" onclick="gen()">
+
+<p>Password Length: 
+<select name="passlength" size="1" onChange="genpass()">
+	<option value=1>1</option>
+	<option value=2>2</option>
+	<option value=3>3</option>
+	<option value=4>4</option>
+	<option value=5>5</option>
+	<option value=6>6</option>
+	<option value=7>7</option>
+	<option value=8 selected="true">8</option>
+	<option value=9>9</option>
+	<option value=10>10</option>
+	<option value=11>11</option>
+	<option value=12>12</option>
+	<option value=13>13</option>
+	<option value=14>14</option>
+	<option value=15>15</option>
+	<option value=16>16</option>
+	<option value=17>17</option>
+	<option value=18>18</option>
+	<option value=19>19</option>
+</select>
+</p>
+<label><input type="checkbox" name="uselower" onclick="genpass()" checked="true">Use Lower</label>
+<label><input type="checkbox" name="useupper" onclick="genpass()">Use Upper</label>
+<label><input type="checkbox" name="usedigits" onclick="genpass()">Use Digits</label>
+<label><input type="checkbox" name="usespec" onclick="genpass()">Use Special</label>
+
+
+</form>
+<script src="../js/hashfunctions.js"></script>
+<script src="../js/namescommon.js"></script>
+<script type="text/javascript">
+<!-- 
+var lower = "abcdefghijklmnopqrstuvwxyz";
+var upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+var digits = "0123456789";
+var spec = "`~!@#$%^&*()-_=+[{]}\\|;:'\",<.>/?";
+var numrows = 8;
+
+function gen()
+{//generate new emails
+	for (var i = 1; i <= numrows; i++)
+	{//go through each row
+		var first=document.mainform['first'+i].value;
+		var last=document.mainform['last'+i].value;
+		var user=document.mainform['user'+i].value;
+		var pass=document.mainform['pass'+i].value;
+		var email=document.mainform['email'+i].value;
+		var url="";
+		
+		if (i%2==1) first = maleNames[Math.floor(Math.random() * maleNames.length)];
+		if (i%2==0) first = femaleNames[Math.floor(Math.random() * femaleNames.length)];
+		last = lastNames[Math.floor(Math.random() * lastNames.length)];
+		
+		user = first+last;
+		if (document.mainform.addrand.checked) user += Math.floor(Math.random()*900) + 100;
+		email = user + "@mailinator.com";
+		url = "http://"+user+".mailinator.com";
+		document.getElementById('url'+i).href=url;
+		
+		document.mainform['first'+i].value=first;
+		document.mainform['last'+i].value=last;
+		document.mainform['user'+i].value=user;
+		document.mainform['pass'+i].value=pass;
+		document.mainform['email'+i].value=email;
+	}
+	genalt();
+	genpass();
+}
+
+function genalt()
+{//find alternate domains and insert them without changing the other fields
+	for (var i = 1; i <= numrows; i++)
+	{//go through each row
+		var user=document.mainform['user'+i].value;
+		var alttemp = altDomains[Math.floor(Math.random() * altDomains.length)];
+		alt = user + "@" + alttemp;
+		document.mainform['alt'+i].value=alt;		
+	}
+}
+
+function genpass()
+{
+	var allowedchars = "";
+	if (document.mainform.uselower.checked) allowedchars += lower;
+	if (document.mainform.useupper.checked) allowedchars += upper;
+	if (document.mainform.usedigits.checked) allowedchars += digits;
+	if (document.mainform.usespec.checked) allowedchars += spec;
+	var passlen = document.mainform.passlength.value;
+	
+	for (var i = 1; i <= numrows; i++)
+	{
+		var user=document.mainform['user'+i].value;
+		var pass=document.mainform['pass'+i].value;
+		
+		pass = any_md5(user,allowedchars);
+		pass = pass.substring(pass.length-passlen);		
+		
+		document.mainform['pass'+i].value=pass;
+	}
+}
+
+
+
+-->
+</script>
+
+<hr>
+<p>I made this for those sites that force you to register to view content.  The mailinator home page gives you a random inbox, but selecting it is kind of annoying, and some sites complain about things like using the same first name, last name, username, and/or password.  This will give you all the details you need in easy-to-copy-and-paste format.</p>
+
+<p>It generates the password based on the end of the md5 hash of the username, limited to whatever password requirements you give it.  Nice for sites that force digits or upper case letters.  It also means you can find the password in the future if you need it by recalculating the md5 hash yourself.  If you find out the requirements after putting in the other info you can change the parameters without it updating new random info.</p>
+
+<p>There is also a checkbox to add a random 3 digit number to the end of the usernames.  This is nice for sites where every username is taken.  I tested the gmail registration and every single combo given was taken, none of the ones with random numbers were though.</p>
+
+<p>It also gives an alternative domain to use if mailinator.com is blocked.  If the alternative is blocked as well it lets you get another one without changing all the other info.</p>
+
+</body></html>

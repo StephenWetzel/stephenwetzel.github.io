@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html><head><title>Screen Height And Width From Diagonal Length Calculator</title>
+<meta charset="UTF-8">
+<link rel=stylesheet href="../css/style.css" type="text/css">
+<style type="text/css">
+table {padding-bottom:20px;}
+table * {padding-right:5px;}
+</style>
+</head>
+<body class="reading">
+
+<form name="mainform" action="screensize.htm">
+<p class="nobreak"><strong>Enter screen info here:</strong></p>
+<table>
+	<tr>
+		<td>Diagonal size <input type="text" name="size" size=10 onkeyup="calc()"></td>
+		<td> Ratio <select name="ratio" onChange="calc()">
+		<option value="0">5:4, 1280x1024 = 1.25</option>
+		<option value="1">4:3, 800x600, 1024x768 = 1.33</option>
+		<option value="2">16:10, 1280x800, 1680x1050 = 1.6</option>
+		<option value="3">16:9, 1280x720, 1920x1080 = 1.78</option>
+		</select></td>
+	</tr>
+	<tr>
+		<td>
+</table>
+<p class="nobreak"><strong>What size screens with the same diagonal, but different aspect ratios will be:</strong></p>
+<table>
+	<tr>
+		<td>5:4, 1280x1024 = 1.25</td><td>&nbsp;</td>
+		<td>Height <input type="text" name="height0" size="6"></td>
+		<td>&nbsp;&nbsp;Width <input type="text" name="width0" size="6"></td>
+		<td>&nbsp;&nbsp;Area <input type="text" name="area0" size="6"></td>
+	</tr>
+	<tr>
+		<td>4:3, 800x600, 1024x768 = 1.33</td><td>&nbsp;</td>
+		<td>Height <input type="text" name="height1" size="6"></td>
+		<td>&nbsp;&nbsp;Width <input type="text" name="width1" size="6"></td>
+		<td>&nbsp;&nbsp;Area <input type="text" name="area1" size="6"></td>
+	</tr>
+	<tr>
+		<td>16:10, 1280x800 = 1.6</td><td>&nbsp;</td>
+		<td>Height <input type="text" name="height2" size="6"></td>
+		<td>&nbsp;&nbsp;Width <input type="text" name="width2" size="6"></td>
+		<td>&nbsp;&nbsp;Area <input type="text" name="area2" size="6"></td>
+	</tr>
+	<tr>
+		<td>16:9, 1280x720, 1920x1080 = 1.78</td><td>&nbsp;</td>
+		<td>Height <input type="text" name="height3" size="6"></td>
+		<td>&nbsp;&nbsp;Width <input type="text" name="width3" size="6"></td>
+		<td>&nbsp;&nbsp;Area <input type="text" name="area3" size="6"></td>
+	</tr>
+</table>
+<p class="nobreak"><strong>Diagonal needed for equal height, width, or area:</strong></p>
+<table>
+	<tr>
+		<td>5:4, 1280x1024 = 1.25</td><td>&nbsp;</td>
+		<td>Equal Height <input type="text" name="height0e" size="6"></td>
+		<td>&nbsp;&nbsp;Equal Width <input type="text" name="width0e" size="6"></td>
+		<td>&nbsp;&nbsp;Equal Area <input type="text" name="area0e" size="6"></td>
+	</tr>
+	<tr>
+		<td>4:3, 800x600, 1024x768 = 1.33</td><td>&nbsp;</td>
+		<td>Equal Height <input type="text" name="height1e" size="6"></td>
+		<td>&nbsp;&nbsp;Equal Width <input type="text" name="width1e" size="6"></td>
+		<td>&nbsp;&nbsp;Equal Area <input type="text" name="area1e" size="6"></td>
+	</tr>
+	<tr>
+		<td>16:10, 1280x800 = 1.6</td><td>&nbsp;</td>
+		<td>Equal Height <input type="text" name="height2e" size="6"></td>
+		<td>&nbsp;&nbsp;Equal Width <input type="text" name="width2e" size="6"></td>
+		<td>&nbsp;&nbsp;Equal Area <input type="text" name="area2e" size="6"></td>
+	</tr>
+	<tr>
+		<td>16:9, 1280x720, 1920x1080 = 1.78</td><td>&nbsp;</td>
+		<td>Equal Height <input type="text" name="height3e" size="6"></td>
+		<td>&nbsp;&nbsp;Equal Width <input type="text" name="width3e" size="6"></td>
+		<td>&nbsp;&nbsp;Equal Area <input type="text" name="area3e" size="6"></td>
+	</tr>
+</table>
+
+</form>
+
+<script type="text/javascript">
+<!--
+var link=document.mainform //short cut
+
+function calc()
+{//figure out the distances and times
+	var r0 //5:4, 1280x1024 = 1.25
+	var r1 //4:3, 800x600, 1024x768 = 1.33
+	var r2 //16:10, 1280x800 = 1.6
+	var r3 //16:9, 1280x720, 1920x1080 = 1.78
+	var dia = link.size.value
+	var x = link.ratio.value
+	var height
+	var width
+	var area
+	var sines=new Array()
+	var cosines=new Array()
+	
+	sines[0]=0.780868809443030 //1.25
+	sines[1]=0.799278268827735 //1.33
+	sines[2]=0.847998304005088 //1.6
+	sines[3]=0.871837025185230 //1.78
+	
+	cosines[0]=0.624695047554424 //1.25
+	cosines[1]=0.600961104381756 //1.33
+	cosines[2]=0.529998940003180 //1.6
+	cosines[3]=0.489796081564736 //1.78
+	
+	height = cosines[x] * dia
+	width = sines[x] * dia
+	area = width * height
+	
+	link.width0e.value=Math.round(100*width/sines[0])/100
+	link.height0e.value=Math.round(100*height/cosines[0])/100
+	link.area0e.value= Math.round(100*Math.sqrt((area) / (sines[0]*cosines[0])))/100
+
+	link.width1e.value=Math.round(100*width/sines[1])/100
+	link.height1e.value=Math.round(100*height/cosines[1])/100
+	link.area1e.value= Math.round(100*Math.sqrt((area) / (sines[1]*cosines[1])))/100
+	
+	link.width2e.value=Math.round(100*width/sines[2])/100
+	link.height2e.value=Math.round(100*height/cosines[2])/100
+	link.area2e.value= Math.round(100*Math.sqrt((area) / (sines[2]*cosines[2])))/100
+	
+	link.width3e.value=Math.round(100*width/sines[3])/100
+	link.height3e.value=Math.round(100*height/cosines[3])/100
+	link.area3e.value= Math.round(100*Math.sqrt((area) / (sines[3]*cosines[3])))/100
+	
+	//5:4, 1280x1024 = 1.25
+	link.width0.value=Math.round(100*dia * sines[0])/100
+	link.height0.value=Math.round(100*dia * cosines[0])/100
+	link.area0.value=Math.round(100*link.width0.value * link.height0.value)/100
+	
+	//4:3, 800x600, 1024x768 = 1.33
+	link.width1.value=Math.round(100*dia * sines[1])/100
+	link.height1.value=Math.round(100*dia * cosines[1])/100
+	link.area1.value=Math.round(100*link.width1.value * link.height1.value)/100
+	
+	//16:10, 1280x800 = 1.6
+	link.width2.value=Math.round(100*dia * sines[2])/100
+	link.height2.value=Math.round(100*dia * cosines[2])/100
+	link.area2.value=Math.round(100*link.width2.value * link.height2.value)/100
+	
+	//16:9, 1280x720, 1920x1080 = 1.78
+	link.width3.value=Math.round(100*dia * sines[3])/100
+	link.height3.value=Math.round(100*dia * cosines[3])/100
+	link.area3.value=Math.round(100*link.width3.value * link.height3.value)/100
+}
+-->
+</script>
+<hr>
+<p>If you don't know what ratio your screen is, you just take the resolution and divide the larger number by the smaller.  1024/768=1.33  Here's the summary:<br>
+5:4, 1280x1024 = 1.25, Non-widescreen LCD monitors.<br>
+4:3, 800x600, 1024x768 = 1.33, Non-widescreen TVs and monitors<br>
+16:10, 1280x800, 1680x1050 = 1.6, Widescreen monitors<br>
+16:9, 1280x720, 1920x1080 = 1.78, Widescreen TVs<br>
+</p>
+
+</body></html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html><head><title>Relativistic Acceleration</title>
+<meta charset="UTF-8">
+<link rel=stylesheet href="../css/style.css" type="text/css">
+</head>
+<body class="reading">
+
+<form name="mainform" action="speed.htm">
+<table>
+	<tr>
+		<td>If you accelerate at </td>
+		<td><input type="text" name="accleration" value="9.80665" size=15 onkeyup="calc()">
+		<select name="aunit">
+		<option value="0">Meters/Second^2</option>
+		<option value="1">g</option>
+		</select></td>
+	</tr>
+</table>
+<table>
+	<tr>
+		<td>Until you reach </td>
+		<td><select name="choice" size="1" onChange="redirect(this.options.selectedIndex)">
+		<option value="0">Velocity</option>
+		<option value="1">Earth Time</option>
+		<option value="2">Ship Time</option>
+		<option value="3">Distance</option>
+		<option value="4">Lorentz Factor</option>
+		</select></td>
+		<td><input type="text" name="value" size=25 onkeyup="calc()"></td>
+		<td><select name="unit">
+		<option value="0">Meters/Second</option>
+		<option value="1">c</option>
+		</select></td>
+		<td><input type="button" value="Calc" onclick="calc()"></td>
+	</tr>
+</table>
+<br>
+<table>
+	<tr>
+		<td>It will take:</td>
+	</tr>
+	<tr>
+		<td>Velocity</td><td>&nbsp;</td>
+		<td><input type="text" name="result0" size="25"> Meters/Second</td><td>&nbsp;&nbsp;or&nbsp;&nbsp;</td>
+		<td><input type="text" name="result0a" size="25"> c</td>
+	</tr>
+	<tr>
+		<td>Earth Time</td><td>&nbsp;</td>
+		<td><input type="text" name="result1" size="25"> Seconds</td><td>&nbsp;&nbsp;or&nbsp;&nbsp;</td>
+		<td><input type="text" name="result1a" size="25"> Years</td>
+	</tr>
+	<tr>
+		<td>Ship Time</td><td>&nbsp;</td>
+		<td><input type="text" name="result2" size="25"> Seconds</td><td>&nbsp;&nbsp;or&nbsp;&nbsp;</td>
+		<td><input type="text" name="result2a" size="25"> Years</td>
+	</tr>
+	<tr>
+		<td>Distance</td><td>&nbsp;</td>
+		<td><input type="text" name="result3" size="25"> Meters</td><td>&nbsp;&nbsp;or&nbsp;&nbsp;</td>
+		<td><input type="text" name="result3a" size="25"> Light Years</td>
+	</tr>
+	<tr>
+		<td>Lorentz Factor</td><td>&nbsp;</td>
+		<td><input type="text" name="result4" size="25"> &gamma;</td>
+	</tr>
+</table>
+</form>
+
+<script src="../js/shared.js"></script>
+<script type="text/javascript">
+<!--
+//Formulas from http://math.ucr.edu/home/baez/physics/Relativity/SR/rocket.html
+var link=document.mainform //short cut
+var groups=document.mainform.choice.options.length //number of options
+var group=new Array(groups) //create an array with that number of options
+var temp=document.mainform.unit
+
+for (i=0; i<groups; i++)
+group[i]=new Array()
+
+//0 - Velocity
+group[0][0]=new Option("Meters/Second","0")
+group[0][1]=new Option("c","1")
+
+//1 - Earth Time
+group[1][0]=new Option("Seconds","0")
+group[1][1]=new Option("Years","1")
+
+//2 - Ship Time
+group[2][0]=new Option("Seconds","0")
+group[2][1]=new Option("Years","1")
+
+//3 - Distance
+group[3][0]=new Option("Meters","0")
+group[3][1]=new Option("Light Years","1")
+
+//4 - Gamma
+group[4][0]=new Option("")
+
+function redirect(x)
+{//change the units shown in second combo box
+	for (m=temp.options.length-1;m>0;m--)
+	temp.options[m]=null//get rid of current options
+	for (i=0;i<group[x].length;i++)
+	{//create new options
+		temp.options[i]=new Option(group[x][i].text,group[x][i].value)
+	}
+	temp.options[0].selected=true
+}
+
+function asinh(x)
+{//inverse hyperbolic sine
+	return Math.log(x + Math.sqrt(Math.pow(x,2) + 1))
+}
+
+function sinh(x)
+{//hyperbolic sine
+	return (Math.exp(x) - Math.exp(-x)) / 2
+}
+
+function cosh(x)
+{//hyperbolic cosine
+	return (Math.exp(x) + Math.exp(-x)) / 2
+}
+
+function calc()
+{//figure out the distances and times
+	var workingunit=document.mainform.choice.value
+	var v //velocity
+	var e //earth time
+	var s //ship time
+	var d //distance
+	var g=9.80665 //acceleration
+	var c=299792458 //speed of light
+	var a=g //acceleration
+	var sec=31556926 //seconds in a year
+	var ga //gamma (Lorentz Factor)
+	
+	link.value.value = link.value.value.replace(/\,/g,'')
+	a = link.accleration.value
+	if (link.aunit.value==1){a*=g}
+	if (workingunit==0)
+	{//0 - Velocity
+		v = link.value.value
+		if (link.unit.value==1){v*=c}
+		e = Math.sqrt((c*c) / (((a*a*c*c)/(v*v))-(a*a)))
+		s = (c/a) * (asinh(a*e/c))
+		d = (c*c/a) * (Math.sqrt(1+(Math.pow(a*e/c,2)))-1)
+		ga = cosh(a*s/c)
+	}
+	if (workingunit==1)
+	{//1 - Earth Time
+		e = link.value.value
+		if (link.unit.value==1){e*=sec}
+		s = (c/a) * (asinh(a*e/c))
+		d = (c*c/a) * (Math.sqrt(1+(Math.pow(a*e/c,2)))-1)
+		v = (a*e) / (Math.sqrt(1 + Math.pow((a*e) / c, 2)))
+		ga = cosh(a*s/c)
+	}
+	if (workingunit==2)
+	{//2 - Ship Time
+		s = link.value.value
+		if (link.unit.value==1){s*=sec}
+		e = (c/a) * sinh(a*s/c)
+		d = (c*c/a) * (Math.sqrt(1+(Math.pow(a*e/c,2)))-1)
+		v = (a*e) / (Math.sqrt(1 + Math.pow((a*e) / c, 2)))
+		ga = cosh(a*s/c)
+	}
+	if (workingunit==3)
+	{//3 - Distance
+		d = link.value.value
+		if (link.unit.value==1){d*=9460528400000000}
+		e = Math.sqrt(Math.pow(d/c,2) + 2*d/a)
+		s = (c/a) * (asinh(a*e/c))
+		v = (a*e) / (Math.sqrt(1 + Math.pow((a*e) / c, 2)))
+		ga = cosh(a*s/c)
+	}
+	if (workingunit==4)
+	{//4 - Gamma (Lorentz Factor)
+		ga = link.value.value
+		d = (c * c * (ga - 1)) / a
+		e = Math.sqrt(Math.pow(d/c,2) + 2*d/a)
+		s = (c/a) * (asinh(a*e/c))
+		v = (a*e) / (Math.sqrt(1 + Math.pow((a*e) / c, 2)))
+	}
+
+	//put the scaled results in boxes
+	link.result0a.value=sciNotation(addCommas(roundTo(v/c,8)))
+	link.result1a.value=sciNotation(addCommas(roundTo(e/sec,6)))
+	link.result2a.value=sciNotation(addCommas(roundTo(s/sec,6)))
+	link.result3a.value=sciNotation(addCommas(roundTo(d/9460528400000000,6)))
+	
+	//put the direct results in boxes
+	link.result0.value=sciNotation(addCommas(roundTo(v,6)))
+	link.result1.value=sciNotation(addCommas(roundTo(e,6)))
+	link.result2.value=sciNotation(addCommas(roundTo(s,6)))
+	link.result3.value=sciNotation(addCommas(roundTo(d,6)))
+	link.result4.value=sciNotation(addCommas(roundTo(ga,6)))
+}
+-->
+</script>
+<hr>
+<p>If you have a space ship and accelerate constantly you can replicate gravity while also going quite fast. You will quickly reach relativistic speeds, and will need to take special relativity into account.  Accelerating at a rate equal to Earth's gravity will allow you to reach anywhere in the 100,000 light year across galaxy in under 25 years (ship time).  Keep in mind that if you want to arrive stopped, you'd have to travel half the distance and then turn around and spend the second half of the journey decelerating.</p>
+
+<p>If you don't have a space ship capable of unlimited acceleration, the math works for more mundane speeds as well.</p>
+
+<p>All the math came from <a href="http://math.ucr.edu/home/baez/physics/Relativity/SR/rocket.html">this site</a>.</p>
+
+</body></html>

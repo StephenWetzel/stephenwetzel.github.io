@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html><head><title>Truth Table</title>
+<meta charset="UTF-8">
+<link rel=stylesheet href="../css/style.css" type="text/css">
+
+</head>
+<body class="reading">
+
+<form name="mainform">
+<table style="width:100%; min-width:25em;">
+	<tr><td style="width:2em">fct</td><td><input type="text" name="function1" style="width:97%" onkeyup="gentable()" value="f = xy + (y * 'z)"></td>
+	<td><input type='text' name='eq1' style="width:99%"></td></tr>
+	<tr><td style="width:2em">fct</td><td><input type="text" name="function2" style="width:97%" onkeyup="gentable()" value="g = xyz"></td>
+	<td><input type='text' name='eq2' style="width:99%"></td></tr>
+	<tr><td style="width:2em">fct</td><td><input type="text" name="function3" style="width:97%" onkeyup="gentable()" value="h = ('x + 'y)"></td>
+	<td><input type='text' name='eq3' style="width:99%"></td></tr>
+	<tr><td style="width:2em">fct</td><td><input type="text" name="function4" style="width:97%" onkeyup="gentable()" value="i = '('x * 'y * 'z)"></td>
+	<td><input type='text' name='eq4' style="width:99%"></td></tr>
+	<tr><td style="width:2em">fct</td><td><input type="text" name="function5" style="width:97%" onkeyup="gentable()" value="j = x + y + z"></td>
+	<td><input type='text' name='eq5' style="width:99%"></td></tr>
+</table>
+
+&nbsp;&nbsp;&nbsp;AND: <input type="text" name="andChar" style="width:2em" onkeyup="gentable()" value="*">
+&nbsp;&nbsp;&nbsp;OR:  <input type="text" name="orChar"  style="width:2em" onkeyup="gentable()" value="+">
+&nbsp;&nbsp;&nbsp;NOT: <input type="text" name="notChar" style="width:2em" onkeyup="gentable()" value="'">
+&nbsp;&nbsp;&nbsp;Treat multiple letters as: <select name="multiChar" size="1" onChange="gentable()">
+		<option value="1">AND</option>
+		<option value="2">OR</option>
+		<option value="0">Multiletter Name</option></select>
+</form>
+<br>
+<div id = "truthtable"></div>
+
+<script type="text/javascript">
+<!-- 
+
+function replaceMultiChars(str, replaceChar)
+{//finds runs of 2 chars and inserts char between, and puts them in ()
+	function convert(run) {
+		//We escape pipes, because they are regex chars:
+		endChar = new RegExp(replaceChar.replace(/\|/g, '\\|')+'$');
+		run = run.replace(/([a-zA-Z])/g, '$1'+replaceChar);
+		run = run.replace(endChar,'');
+		return "(" + run + ")";
+	}
+	var charRun = /[a-zA-Z]{2,}/g; //2 or more letters
+	str = str.replace(charRun, convert); //go through those letter groups
+	return str;
+}
+
+function paddy(n, p, c) {//pad with 0 or anything else
+		var pad_char = typeof c !== 'undefined' ? c : '0';
+		var pad = new Array(1 + p).join(pad_char);
+		return (pad + n).slice(-pad.length);
+}
+
+function parseFctName(fct)
+{// get the functions name (should be before the =
+	var arr = fct.split('=');
+	var fctName = arr[0].trim();
+	return fctName;
+}
+
+function parseFctLogic(fct, charOr, charAnd, charNot, charMulti)
+{//get the logic of the function, what comes after =
+	//var charOr = '\\+';
+	//var charAnd = '\\*';
+	//var charNot = "\\'";
+	//var charMulti = '&&';
+	var charOr = new RegExp(charOr, 'g');
+	var charAnd = new RegExp(charAnd, 'g');
+	var charNot = new RegExp(charNot, 'g');
+	
+	var arr = fct.split('=');
+	if (typeof arr[1] == "undefined") {arr[1] = '0';}
+	var fctLogic = arr[1].trim();
+	fctLogic = fctLogic.replace(charOr, '||');
+	fctLogic = fctLogic.replace(charAnd, '&&');
+	fctLogic = fctLogic.replace(charNot, '!');
+	if (charMulti) {fctLogic = replaceMultiChars(fctLogic, charMulti);}
+	return fctLogic;
+}
+
+function eliminateDuplicates(arr) {
+	var i,
+		len=arr.length,
+		out=[],
+		obj={};
+
+	for (i=0;i<len;i++) {
+		obj[arr[i]]=0;
+	}
+	for (i in obj) {
+		out.push(i);
+	}
+	return out;
+}
+
+function countVariables(str)
+{//counts unique variables
+	str = str.replace(/[^a-zA-Z]+/g, ';'); //strip non letters
+	str = str.replace(/^;/, ''); //strip leading ;
+	str = str.replace(/;$/, ''); //strip trailing ;
+	arr = str.split(';');
+	arr = eliminateDuplicates(arr);
+	return arr.length;
+}
+
+function listVariables(str)
+{//lists unique variables
+	str = str.replace(/[^a-zA-Z]+/g, ';'); //strip non letters
+	str = str.replace(/^;/, ''); //strip leading ;
+	str = str.replace(/;$/, ''); //strip trailing ;
+	arr = str.split(';');
+	arr = eliminateDuplicates(arr);
+	return arr.sort();
+}
+
+function gentable()
+{
+	var numFcts = 5;
+	var numVariables = 3;
+	var v = []; //variable names
+	var fctName = [];
+	var fctLogic = [];
+	
+	var andChar = '\\' + document.mainform.andChar.value;
+	var orChar = '\\' + document.mainform.orChar.value;
+	var notChar = '\\' + document.mainform.notChar.value;
+	var multiChar = document.mainform.multiChar.value
+	if (multiChar == 0) {multiChar = '';}
+	if (multiChar == 1) {multiChar = '&&';}
+	if (multiChar == 2) {multiChar = '||';}
+	
+	
+	for (var ii=1; ii <= numFcts; ii++)
+	{//get the function data from the user input
+		var fct = document.mainform['function'+ii].value;
+		fctLogic[ii] = parseFctLogic(fct, orChar, andChar, notChar, multiChar);
+		fctName[ii] = parseFctName(fct);
+		if (fctLogic[ii] == '') {fctLogic[ii] = 1;}
+		document.mainform['eq'+ii].value = fctLogic[ii];
+	}
+	
+	numVariables = countVariables(fctLogic[1]+';'+fctLogic[2]+';'+fctLogic[3]+';'+fctLogic[4]+';'+fctLogic[5]); //figure out how many variables we have
+	v = listVariables(fctLogic[1]+';'+fctLogic[2]+';'+fctLogic[3]+';'+fctLogic[4]+';'+fctLogic[5]); //find the variable names
+	
+	var table	= '<table border=1 class="results">';
+			table += '\n<thead><tr><td>Dec</td><td>Bin</td>';
+			
+			for (var jj=0; jj < numVariables; jj++)
+			{//list variable names in table header
+				table += '<td>'+v[jj]+'</td>';
+			}
+			table += '<td>&nbsp;&nbsp;&nbsp;</td>';
+			table += '<td>'+fctName[1]+'</td><td>'+fctName[2]+'</td><td>'+fctName[3]+'</td><td>'+fctName[4]+'</td><td>'+fctName[5]+'</td>';
+			table += '</tr></thead>\n<tbody>';
+	
+	var fctResult = [];
+	for (var ii=0; ii < Math.pow(2,numVariables); ii++)
+	{//go through each row of truth table
+		var binValue = paddy(ii.toString(2), numVariables);
+		table += '\n<tr><td>'+ii+'</td><td>'+binValue+'</td>';
+		
+		var arr = binValue.split('');
+		for (var jj=0; jj < numVariables; jj++)
+		{//go through each bit in binary number
+			var temp = v[jj] + '=' + parseInt(arr[jj]);
+			eval(temp); //set the variable named by user to this bit value
+			table += '<td>'+eval(v[jj])+'</td>';
+		}
+		table += '<td></td>';
+		for (var fctNum = 1; fctNum <= numFcts; fctNum++)
+		{//go through each function, decide if it's true
+			var ifStatement = "if (" + fctLogic[fctNum] + ") {1} else {0}";
+			var result = eval(ifStatement); //truth?
+			table += '<td>'+result+'</td>';
+			fctResult[fctNum] = fctResult[fctNum] << 1; //Bit shift to next position	
+			fctResult[fctNum] = fctResult[fctNum] | result; //Bitwise storing results
+		}
+		table += '</tr>';
+	}
+	table += '</tbody></table>';
+	
+	for (var fctNum = 1; fctNum <= numFcts; fctNum++)
+	{//go through each function
+		//table += '<tr><td>'+fctName[fctNum]+'</td><td>'+fctResult[fctNum]+'</td>';
+		table += '\n<br>'+fctName[fctNum]+' = '+fctResult[fctNum];
+	}
+	
+	
+	
+	
+	document.getElementById('truthtable').innerHTML = table;
+	
+}
+
+gentable();
+
+-->
+</script>
+
+<hr>
+<p>
+<a href='http://en.wikipedia.org/wiki/Truth_table'>Truth table</a> generator.  Enter functions on the left.  See how they are evaluated on the right.  Change the symbols used for operators if you don't like the rather nonstandard ones I use.  Only supports AND, OR, and NOT.  NOT must come before the variable.  Use (parentheses) to ensure order of operations is what you want, otherwise <a href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence'>javascript does AND before OR</a>.  Multiple letters in a row can either be treated as multiple letter variable names, or have ANDs or Ors inserted between them, and parentheses around them.  After the table, the decimal representations of the binary columns is displayed, which isn't of much use except for quickly comparing equivalence.
+</p>
+
+</body></html>
