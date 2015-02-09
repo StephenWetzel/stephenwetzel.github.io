@@ -181,18 +181,16 @@ function calc()
 	}
 }
 
+//there is no error checking here to see what the user enters
 function addResolution()
-{
+{//get a new resolution from the user and add it to the object, regen the page with new info
 	var newRes = document.getElementById('newRes').value;
-	var resRegex = /(\d+).+(\d+)/g;
-	var groups = resRegex.exec(newRes);
-	
-	var tempObj = {"width": groups[0], "height": groups[1]};
-	screenSizes.push(tempObj);
-	console.log(tempObj);
-	assignRatios(screenSizes);
-	var listOfRatios = getListOfRatios(screenSizes);
-	buildTables(screenSizes, listOfRatios);
+	var groups = /(\d+).+?(\d+)/.exec(newRes); //find two groups of digits
+	screenSizes.push({"width": groups[1], "height": groups[2]}); //add the new resolutions
+	assignRatios(screenSizes); //calculate ratios for resolutions
+	listOfRatios = getListOfRatios(screenSizes); //get list of resolutions
+	buildTables(screenSizes, listOfRatios); //build the html
+	calc(); //do the math and display results
 }
 
 
