@@ -65,5 +65,9 @@ function sciNotation(str)
 	return str;	
 }
 
-
+function gcd(a, b)
+{//Euclid's algorithm to find the greatest common denominator
+	if (b == 0) { return a; }
+	else { return gcd(b, a % b); }
+}
 
