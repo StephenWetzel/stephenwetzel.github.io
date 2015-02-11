@@ -29,12 +29,28 @@ table * {padding-right:5px;}
 </table>
 
 </form>
+
+<hr>
+<p>If you don't know what ratio your screen is, you just take the resolution and divide the larger number by the smaller.  1024/768=1.33  Here's the summary:<br>
+5:4, 1280x1024 = 1.25, Non-widescreen LCD monitors.<br>
+4:3, 800x600, 1024x768 = 1.33, Non-widescreen TVs and monitors<br>
+16:10, 1280x800, 1680x1050, 1920x1200 = 1.6, Widescreen monitors<br>
+16:9, 1280x720, 1600x900, 1920x1080, 2560x1440 = 1.78, Widescreen TVs and newer monitors<br>
+</p>
+<p id="userScreenSize"></p>
+<p>Type a new resolution here to add it to the list: <input type="text" id="newRes" size=15> 
+<input type="button" value="Add Resolution" onclick="addResolution()"></p>
+
 <script src="../js/shared.js"></script>
 <script type="text/javascript">
 <!--
 var link=document.mainform //short cut
 
+var userWidth = screen.width;
+var userHeight = screen.height;
+
 screenSizes = [
+	{"width":  userWidth, "height":  userHeight},
 	{"width": 1280, "height": 1024},
 	{"width": 1280, "height":  800},
 	{"width": 1920, "height": 1080},
@@ -150,6 +166,8 @@ function buildTables(sizes, ratios)
 	document.getElementById('sameDiagonal').innerHTML = diagonalTable;
 	document.getElementById('sameArea').innerHTML = areaTable;
 	document.getElementById('ratioDropDown').innerHTML = dropDown;
+	document.getElementById('userScreenSize').innerHTML = "Your screen is: "+userWidth+"x"+userHeight;
+	
 }
 
 //we could combine this with the above html generation and not use text boxes
@@ -196,15 +214,6 @@ function addResolution()
 
 -->
 </script>
-<hr>
-<p>If you don't know what ratio your screen is, you just take the resolution and divide the larger number by the smaller.  1024/768=1.33  Here's the summary:<br>
-5:4, 1280x1024 = 1.25, Non-widescreen LCD monitors.<br>
-4:3, 800x600, 1024x768 = 1.33, Non-widescreen TVs and monitors<br>
-16:10, 1280x800, 1680x1050, 1920x1200 = 1.6, Widescreen monitors<br>
-16:9, 1280x720, 1600x900, 1920x1080, 2560x1440 = 1.78, Widescreen TVs and newer monitors<br>
-</p>
 
-<p>Type a new resolution here to add it to the list: <input type="text" id="newRes" size=15> 
-<input type="button" value="Add Resolution" onclick="addResolution()"></p>
 
 </body></html>
