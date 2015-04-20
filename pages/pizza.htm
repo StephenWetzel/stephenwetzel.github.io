@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html><head><title>Pizza Calculator</title>
+<meta charset="UTF-8">
+<link rel=stylesheet href="../css/style.css" type="text/css">
+<script type="text/javascript"></script>
+<style type="text/css">
+table {padding-bottom:20px;}
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+th {
+	padding-left:  1em;
+	padding-right: 1em;
+	padding-top:    .5em;
+	padding-bottom: .5em;
+}
+tr:nth-child(even), thead {
+	background-color: #edd;
+}
+</style>
+</head>
+<body class="reading">
+
+<form name="mainform" action="pizza.htm">
+<table id="pizzaTable"></table>
+<input type='button' value='Recalc' onclick='calc()'>
+
+<p>Add another pizza: </p>
+<table id="newPizza">
+<thead><tr><th>Quantity</th><th>Slice</th><th>Diameter</th><th>Price</th><th> </th></tr></thead>
+<tr><td><input type='text' size=3 value=''></td>
+<td><input type='checkbox'></td>
+<td><input type='text' size=3 value=''></td>
+<td><input type='text' size=3 value=''></td>
+<td><input type='button' value='Add' onclick='addPizza()'></td></tr>
+</table>
+</form>
+
+<hr>
+<p>Used to compare the price and total size of pizzas at various sizes.</p>
+
+<p>Enter the quantity, check the box if it is by the slice, enter the total diameter (for the whole pie if a single slice), and then the total price.  It will then compute the area, the equivalent standard 16” pizza slices, and standard 16” pies, as well as the price per each of those.</p>
+
+<p>This doesn't take into account the depth of the pizzas.  I could have added a 3rd dimension, but the value doesn't scale the same way.  Adding a square foot of area adds more of everything, adding another half inch of depth only adds bread.  You may or may not like the deeper dish, but everyone should agree a pizza twice as deep isn't worth exactly twice another pizza.  It's a similar story for toppings or for quality of pizza from different places.</p>
+
+<script src="../js/shared.js"></script>
+<script type="text/javascript">
+<!--
+var link=document.mainform //short cut
+
+var pi = 3.1415926535897932384626433; //this level of precision is very necessary
+var pieArea = 8 * 8 * pi; //area of a benchmark pizza
+var sliceArea = pieArea / 8;
+var inchesInSqft = 12 * 12;
+
+pizzas = [
+	{"qty": 1, "slice": false, "dia": 16, "price": 10},
+	{"qty": 1, "slice": false, "dia": 14, "price": 12},
+	{"qty": 1, "slice": true,  "dia": 16, "price": 2}
+];
+
+calc();
+
+function calc()
+{
+	getValuesFromTable(pizzas);
+	calcPizzas(pizzas);
+	buildTables(pizzas);
+}
+
+function addPizza()
+{
+	var newPizza = document.getElementById('newPizza').rows[1]
+	pizzas.push({
+		'qty':   newPizza.cells[0].children[0].value,
+		'slice': newPizza.cells[1].children[0].checked,
+		'dia':   newPizza.cells[2].children[0].value,
+		'price': newPizza.cells[3].children[0].value
+		})
+	calc();
+}
+
+function removePizza(pizzaNum)
+{
+	pizzas.splice(pizzaNum, 1);
+	buildTables(pizzas);
+}
+
+function getValuesFromTable(pizzas)
+{//go through table and get user entered values, put them in our array of pizzas
+	var rows = document.getElementById('pizzaTable').rows;
+	
+	for (var ii = 1; ii < rows.length; ii++)
+	{//go through each row of table, skip header
+		pizzas[ii-1].qty =   rows[ii].cells[0].children[0].value;
+		pizzas[ii-1].slice = rows[ii].cells[1].children[0].checked;
+		pizzas[ii-1].dia =   rows[ii].cells[2].children[0].value;
+		pizzas[ii-1].price = rows[ii].cells[3].children[0].value;
+	}
+}
+
+function calcPizzas(pizzas)
+{//do the calculations needed for each pizza in the array
+	for (var ii = 0; ii < pizzas.length; ii++)
+	{
+		var thisPizza = pizzas[ii];
+		
+		if (thisPizza.dia == '' || thisPizza.qty == '' || thisPizza.price == '') {}
+		else
+		{
+			var radius = thisPizza.dia / 2;
+			thisPizza.area = pi * radius * radius * thisPizza.qty;
+			if (thisPizza.slice) { thisPizza.area /= 8; } //there are 8 slices in a canonical pizza
+			thisPizza.sqft = thisPizza.area / inchesInSqft;
+			thisPizza.sqftPrice = thisPizza.price / thisPizza.sqft;
+			thisPizza.slices = thisPizza.area / sliceArea;
+			thisPizza.slicesPrice = thisPizza.price / thisPizza.slices;
+			thisPizza.pies = thisPizza.area / pieArea;
+			thisPizza.piesPrice = thisPizza.price / thisPizza.pies;
+		}
+	}
+}
+
+function buildTables(pizzas)
+{//build the inner html for both tables based on the screen sizes passed in
+	
+	pizzaTable = "<table><thead><tr><th>Quantity</th><th>Slice?</th><th>Diameter</th><th>Total Price</th><th>Area (in^2)</th><th>Price / sqft</th><th>Slices Equivalent</th><th>Price / slice</th><th>Pie Equivalent</th><th>Price / pie</th><th> </th></tr></thead><tbody>";
+	
+	for (var ii = 0; ii < pizzas.length; ii++)
+	{
+		var thisPizza = pizzas[ii];
+		pizzaTable += "<tr><td><input type='text' size=3 value='"+thisPizza.qty+"'></td>";
+		pizzaTable += "<td><input type='checkbox'"
+		if (thisPizza.slice) pizzaTable += " checked";
+		pizzaTable += "></td>";
+		pizzaTable += "<td><input type='text' size=3 value='"+thisPizza.dia+"'></td>";
+		pizzaTable += "<td><input type='text' size=3 value='"+thisPizza.price+"'></td>";
+		pizzaTable += "<td>"+roundTo(thisPizza.area)+"</td>";
+		pizzaTable += "<td>"+price(thisPizza.sqftPrice)+"</td>";
+		pizzaTable += "<td>"+roundTo(thisPizza.slices)+"</td>";
+		pizzaTable += "<td>"+price(thisPizza.slicesPrice)+"</td>";
+		pizzaTable += "<td>"+roundTo(thisPizza.pies)+"</td>";
+		pizzaTable += "<td>"+price(thisPizza.piesPrice)+"</td>";
+		pizzaTable += "<td><input type='button' value='Delete' onclick='removePizza("+ii+")'></td>";
+	}
+	
+	pizzaTable += "</tbody></table>";
+	document.getElementById('pizzaTable').innerHTML = pizzaTable;	
+}
+
+-->
+</script>
+
+</body></html>

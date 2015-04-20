@@ -71,3 +71,13 @@ function gcd(a, b)
 	else { return gcd(b, a % b); }
 }
 
+function price(p)
+{//format a price
+	var whole = Math.floor(p);
+	var cents = Math.floor((p-whole) * 100);
+	var formatted;
+	formatted = ('    '+whole).slice(-4) + '.' +('00'+cents).slice(-2);
+	
+	
+	return formatted;
+}
