@@ -44,16 +44,18 @@ tr:nth-child(even), thead {
 
 <p>This doesn't take into account the depth of the pizzas.  I could have added a 3rd dimension, but the value doesn't scale the same way.  Adding a square foot of area adds more of everything, adding another half inch of depth only adds bread.  You may or may not like the deeper dish, but everyone should agree a pizza twice as deep isn't worth exactly twice another pizza.  It's a similar story for toppings or for quality of pizza from different places.</p>
 
+<p>For reference, a normal pizza is 16".  The fast food pizza places call that an extra large, they call 14" a large, and 12" a medium.</p>
 <script src="../js/shared.js"></script>
 <script type="text/javascript">
 <!--
 var link=document.mainform //short cut
 
-var pi = 3.1415926535897932384626433; //this level of precision is very necessary
-var pieArea = 8 * 8 * pi; //area of a benchmark pizza
-var sliceArea = pieArea / 8;
-var inchesInSqft = 12 * 12;
+var PI = 3.1415926535897932384626433; //this level of precision is very necessary
+var PIE_AREA = 8 * 8 * PI; //area of a benchmark 16" pizza
+var SLICE_AREA = PIE_AREA / 8; //8 slices in a normal pizza
+var INCHES_IN_SQFT = 12 * 12;
 
+//this array will hold the pizzas, the function calcPizzas will fill in the rest of the attributes for all pizzas listed here
 pizzas = [
 	{"qty": 1, "slice": false, "dia": 16, "price": 10},
 	{"qty": 1, "slice": false, "dia": 14, "price": 12},
@@ -63,14 +65,14 @@ pizzas = [
 calc();
 
 function calc()
-{
+{//a wrapper for the 3 main functions
 	getValuesFromTable(pizzas);
 	calcPizzas(pizzas);
 	buildTables(pizzas);
 }
 
 function addPizza()
-{
+{//add a new pizza to the array of pizzas, and then recald everything
 	var newPizza = document.getElementById('newPizza').rows[1]
 	pizzas.push({
 		'qty':   newPizza.cells[0].children[0].value,
@@ -82,7 +84,7 @@ function addPizza()
 }
 
 function removePizza(pizzaNum)
-{
+{//remove this pizza from the array and then redraw table
 	pizzas.splice(pizzaNum, 1);
 	buildTables(pizzas);
 }
@@ -103,32 +105,32 @@ function getValuesFromTable(pizzas)
 function calcPizzas(pizzas)
 {//do the calculations needed for each pizza in the array
 	for (var ii = 0; ii < pizzas.length; ii++)
-	{
+	{//go through each pizza in array
 		var thisPizza = pizzas[ii];
 		
 		if (thisPizza.dia == '' || thisPizza.qty == '' || thisPizza.price == '') {}
 		else
-		{
+		{//the 3 key pieces of info are not blank, we can use them to calculate the rest
 			var radius = thisPizza.dia / 2;
-			thisPizza.area = pi * radius * radius * thisPizza.qty;
+			thisPizza.area = PI * radius * radius * thisPizza.qty;
 			if (thisPizza.slice) { thisPizza.area /= 8; } //there are 8 slices in a canonical pizza
-			thisPizza.sqft = thisPizza.area / inchesInSqft;
-			thisPizza.sqftPrice = thisPizza.price / thisPizza.sqft;
-			thisPizza.slices = thisPizza.area / sliceArea;
+			thisPizza.sqft        = thisPizza.area  / INCHES_IN_SQFT;
+			thisPizza.sqftPrice   = thisPizza.price / thisPizza.sqft;
+			thisPizza.slices      = thisPizza.area  / SLICE_AREA;
 			thisPizza.slicesPrice = thisPizza.price / thisPizza.slices;
-			thisPizza.pies = thisPizza.area / pieArea;
-			thisPizza.piesPrice = thisPizza.price / thisPizza.pies;
+			thisPizza.pies        = thisPizza.area  / PIE_AREA;
+			thisPizza.piesPrice   = thisPizza.price / thisPizza.pies;
 		}
 	}
 }
 
 function buildTables(pizzas)
-{//build the inner html for both tables based on the screen sizes passed in
+{//build the table of pizza info
 	
 	pizzaTable = "<table><thead><tr><th>Quantity</th><th>Slice?</th><th>Diameter</th><th>Total Price</th><th>Area (in^2)</th><th>Price / sqft</th><th>Slices Equivalent</th><th>Price / slice</th><th>Pie Equivalent</th><th>Price / pie</th><th> </th></tr></thead><tbody>";
 	
 	for (var ii = 0; ii < pizzas.length; ii++)
-	{
+	{//go through each pizza, add it as a row in the table
 		var thisPizza = pizzas[ii];
 		pizzaTable += "<tr><td><input type='text' size=3 value='"+thisPizza.qty+"'></td>";
 		pizzaTable += "<td><input type='checkbox'"
