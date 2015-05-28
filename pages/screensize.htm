@@ -131,8 +131,8 @@ function findEqualSizes(ratioOld, diagonalOld, ratioNew)
 	var width = temp.shift();
 	var area = temp.shift();
 	
-	var diagonalEqualHeight  = width  / Math.cos(theta);
-	var diagonalEqualWidth = height / Math.sin(theta);
+	var diagonalEqualWidth  = width  / Math.cos(theta);
+	var diagonalEqualHeight = height / Math.sin(theta);
 	var diagonalEqualArea = Math.sqrt(area / (Math.sin(theta) * Math.cos(theta)));
 	return [diagonalEqualHeight, diagonalEqualWidth, diagonalEqualArea];
 }
