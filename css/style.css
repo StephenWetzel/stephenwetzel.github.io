@@ -54,3 +54,11 @@ a.stealth:link {color:#00aa00; text-decoration:none;}
 	margin-top: 0px;
 }
 
+.Different
+{
+	background-color: #f00;
+}
+.Same
+{
+	background-color: #0f0;
+}

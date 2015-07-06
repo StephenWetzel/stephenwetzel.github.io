@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script type='text/javascript' src="../js/xml2json.min.js"></script>
+		<script type='text/javascript' src="../js/lodash.min.js"></script>
+		<link rel=stylesheet href="css/style.css" type="text/css">
+		<title>XML and JSON Converter and Comparer</title>
+	</head>
+	<body>
+		<script type='text/javascript'>
+			var x2js = new X2JS();
+			function convertXml2JSon(side)
+			{
+				document.mainForm['jsonArea'+side].value = JSON.stringify(x2js.xml_str2json(document.mainForm['xmlArea'+side].value), null, 2)
+			}
+			function convertJSon2XML(side)
+			{
+				document.mainForm['xmlArea'+side].value = formatXML(x2js.json2xml_str(JSON.parse(document.mainForm['jsonArea'+side].value)))
+			}
+			function formatXMLonPage(side)
+			{
+				document.mainForm['xmlArea'+side].value = formatXML(document.mainForm['xmlArea'+side].value)
+			}
+			function formatJSONonPage(side)
+			{
+				document.mainForm['jsonArea'+side].value = JSON.stringify(JSON.parse(document.mainForm['jsonArea'+side].value), null, 2)
+			}
+			function sortJSONonPage(side)
+			{
+				document.mainForm['jsonArea'+side].value = JSON.stringify(sortJson(JSON.parse(document.mainForm['jsonArea'+side].value)), null, 2)
+			}
+			
+			function formatXML(xml)
+			{//add indents and newlines to xml
+				var arr = xml.replace(/>\s*</g,'><').replace(/</g,'$@$<').split('$@$'); //break up into one tag per element in array
+				var len = arr.length;
+				var level = 0; //indent level
+				var indent = '  '; //what to indent by per level
+				var out = '';
+				
+				//won't work with self closing tags with a space at the end <selfClosing/ >
+				var openTag = /^<([^\/][^\<\>]*[^\/]|[^\/])>/; 
+				var closeTag = /^<\/[^\<\>]+>$/;
+				var selfTag = /^<[^\<\>]+\/>$/;
+				for (var tag=1; tag<len; tag++)
+				{//go through each tag
+					
+					var thisTag = arr[tag];
+					var prevTag = arr[tag-1];
+					
+					//console.log("thisTag: "+thisTag+", prevTag: "+prevTag)
+					
+					if (thisTag.search(/<!/) > -1 || thisTag.search(/<\?/) > -1)
+					{//declaration tag
+						//don't have to do anything
+					}
+					else if ((thisTag.search(openTag) > -1) && (prevTag.search(/\?>$/) > -1))
+					{//opening tag proceeded by declaration tag
+						out += '\n' + indent.repeat(level);
+					}
+					else if ((thisTag.search(openTag) > -1) && (tag==1))
+					{//first line is opening tag, ie this is an xml snippet
+						out += '\n' + indent.repeat(level);
+					}
+					else if ((thisTag.search(selfTag) > -1) && (prevTag.search(openTag) > -1))
+					{//self closing tag proceeded by an opening tag
+						level++;
+						out += '\n' + indent.repeat(level);
+					}
+					else if ((thisTag.search(openTag) > -1) && (prevTag.search(openTag) > -1))
+					{//opening tag proceeded by another opening tag
+						level++;
+						out += '\n' + indent.repeat(level);
+					}
+					
+					else if ((thisTag.search(openTag) > -1) && (prevTag.search(closeTag) > -1))
+					{//opening tag proceeded by a closing tag
+						out += '\n' + indent.repeat(level);
+					}
+					else if ((thisTag.search(openTag) > -1) && (prevTag.search(selfTag) > -1))
+					{//opening tag proceeded by a self closing tag
+						out += '\n' + indent.repeat(level);
+					}
+					else if (thisTag.search(selfTag) > -1)
+					{//self closing tag
+						out += '\n' + indent.repeat(level);
+					}
+					else if ((thisTag.search(closeTag) > -1) && (prevTag.search(openTag) > -1))
+					{//closing tag proceeded by an opening tag
+						//don't have to do anything
+					}
+					else if ((thisTag.search(closeTag) > -1) && (prevTag.search(closeTag) > -1))
+					{//closing tag proceeded by another closing tag
+						level--;
+						out += '\n' + indent.repeat(level);
+					}
+					else if ((thisTag.search(closeTag) > -1) && (prevTag.search(selfTag) > -1))
+					{//closing tag proceeded by a self closing tag
+						level--;
+						out += '\n' + indent.repeat(level);
+					}
+					else
+					{//none of the above cases, shouldn't happen
+						console.log("none: "+thisTag);
+					}
+					out += thisTag;
+				}
+				return out;
+			}
+			
+			function compareXML()
+			{
+				var json1 = x2js.xml_str2json(document.mainForm.xmlArea1.value);
+				var json2 = x2js.xml_str2json(document.mainForm.xmlArea2.value);
+				
+				if (_.isEqual(json1, json2))
+				{//same
+					document.getElementById('XMLResult').innerHTML = "Same"
+					document.getElementById('XMLResult').className = "Same"
+				}
+				else
+				{//different
+					document.getElementById('XMLResult').innerHTML = "Different"
+					document.getElementById('XMLResult').className = "Different"
+				}
+			}
+			
+			function compareJSON()
+			{
+				var json1 = JSON.parse(document.mainForm.jsonArea1.value);
+				var json2 = JSON.parse(document.mainForm.jsonArea2.value);
+				
+				if (_.isEqual(json1, json2))
+				{//same
+					document.getElementById('JSONResult').innerHTML = "Same"
+					document.getElementById('JSONResult').className = "Same"
+				}
+				else
+				{//different
+					document.getElementById('JSONResult').innerHTML = "Different"
+					document.getElementById('JSONResult').className = "Different"
+				}
+				
+			}
+			
+			function sortJson(map)
+			{//sort a JSON object by its properties
+				//JSON objects don't actually have an order, so this may sort in unexpected ways
+				//however here, all we care about is that it sorts consistently on a single page for comparison
+				var keys = _.sortBy(_.keys(map), function(a) { return a; });
+				if (map.constructor === Array) { var newmap = []; }
+				else { var newmap = {}; }
+				_.each(keys, function(k) {						
+					if (typeof(map[k]) == 'object')
+					{//check to see if it's an object and recursively call function on it to sort its properties
+						//console.log("Object: "+map[k])
+						newmap[k] = sortJson(map[k]);
+					}
+					else
+					{//not an object, just a value, copy it over and don't recurse
+						newmap[k] = map[k];
+					}
+				});
+				return newmap;
+			}
+		</script>
+    <h2>XML <---> JSON</h2>
+    <form name="mainForm">
+			
+			<table width=99%>
+				<tr>
+					<td width=49%>
+						<h3>XML&nbsp;&nbsp;&nbsp;
+						<input type="button" value="Format XML"   onclick="formatXMLonPage(1)">&nbsp;&nbsp;&nbsp;
+						<input type="button" value="XML -> JSON"  onclick="convertXml2JSon(1)">&nbsp;&nbsp;&nbsp;
+						<input type="button" value="Compare XML"      onclick="compareXML()">
+						<span id = "XMLResult"></span>
+						</h4>
+						<textarea id="xmlArea1" style="width:99%" rows="25"></textarea>
+					</td>
+					<td width=49%>
+						<h3>XML&nbsp;&nbsp;&nbsp;
+						<input type="button" value="Format XML"   onclick="formatXMLonPage(2)">&nbsp;&nbsp;&nbsp;
+						<input type="button" value="XML -> JSON"  onclick="convertXml2JSon(2)">
+						</h4>
+						<textarea id="xmlArea2" style="width:99%" rows="25"></textarea>
+					</td>
+				</tr>
+				<tr><td>&nbsp;&nbsp;&nbsp;</td></tr>
+				<tr>
+					<td>
+						<h3>JSON&nbsp;&nbsp;&nbsp;
+						<input type="button" value="Format JSON"  onclick="formatJSONonPage(1)">&nbsp;&nbsp;&nbsp;
+						<input type="button" value="Sort JSON"  onclick="sortJSONonPage(1)">&nbsp;&nbsp;&nbsp;
+						<input type="button" value="JSON -> XML"  onclick="convertJSon2XML(1)">&nbsp;&nbsp;&nbsp;
+						<input type="button" value="Compare JSON"      onclick="compareJSON()">
+						<span id = "JSONResult"></span>
+						</h4>
+						<textarea id="jsonArea1" style="width:99%" rows="25"></textarea>
+					</td>
+					<td>
+						<h3>JSON&nbsp;&nbsp;&nbsp;
+						<input type="button" value="Format JSON"  onclick="formatJSONonPage(2)">&nbsp;&nbsp;&nbsp;
+						<input type="button" value="Sort JSON"  onclick="sortJSONonPage(2)">&nbsp;&nbsp;&nbsp;
+						<input type="button" value="JSON -> XML"  onclick="convertJSon2XML(2)">
+						</h4>
+						<textarea id="jsonArea2" style="width:99%" rows="25"></textarea>
+					</td>
+				</tr>
+			</table>
+		</form>
+		<p>You can use something like <a href="https://www.diffchecker.com/">Diff Checker</a> to compare the sorted JSON to find which lines are different.</p>
+	</body>
+</html>
