@@ -2,14 +2,23 @@
 <html><head><title>Youtube Alarm</title>
 <meta charset="UTF-8">
 <link rel=stylesheet href="../css/style.css" type="text/css">
+<script src="../js/shared.js"></script>
 </head>
 	<body>
+		<div id="message"></div>
 		<!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
 		<div id="player"></div>
 		<p>Youtube video ID: <input id='vidId' type='text' size=12 value='DhaRkWfaq10'></p>
-		<p>Time to wait: <input id='sleepTime' type='text' size=3 value='1'></p>
-		<p><input type='button' value='Set Alarm' onclick='startAlarm()'></p>
-		
+		<p>Enter the amount of time to wait:</p>
+		<p>
+			H: <input id='waitHours' type='text' size=2 value='1'>
+			M: <input id='waitMins'  type='text' size=2 value='00'>
+			S: <input id='waitSecs'  type='text' size=2 value='00'>
+			<input type='button' value='Set Alarm' onclick='startAlarmDuration()'></p>
+		<br><br>
+		<p>Or, enter the time to wake up at:</p>
+		<p><input id='waitTime'  type='text' size=12 value=''>
+		<input type='button' value='Set Alarm' onclick='startAlarmTime()'></p>
 		
 		<script>
 			// 2. This code loads the IFrame Player API code asynchronously.
@@ -24,9 +33,19 @@
 			function onYouTubeIframeAPIReady() { }
 			
 			//User presses the start Alarm button
-			function startAlarm() {
-				var sleepTime = parseInt(document.getElementById("sleepTime").value);
+			function startAlarmDuration() {
+				var sleepTime = parseInt(document.getElementById("waitHours").value);
+				sleepTime = sleepTime * 60 + parseInt(document.getElementById("waitMins").value);
+				sleepTime = sleepTime * 60 + parseInt(document.getElementById("waitSecs").value); //sleepTime is in seconds
 				setTimeout(startPlaying, sleepTime * 1 * 1000);
+			}
+			
+			//User presses the start Alarm button
+			function startAlarmTime() {
+				var sleepTime = parseTime(document.getElementById("waitTime").value) - Date.now();
+				console.log("sleepTime: "+sleepTime/1000);
+				document.getElementById("message").innerHTML = displayMessage(sleepTime/1000);
+				setTimeout(startPlaying, sleepTime);
 			}
 			
 			//Timer finishes counting, alarm begins to go off
@@ -54,7 +73,43 @@
 				}, 1000);
 			}
 			
+			//return a string in the form of "2.11 hours"
+			function formatDecimalTime(secs) {
+				if (secs > 3600) { //we only really care about time scales up to a few hours
+					return roundTo(secs / 3600) + " hours";
+				} else {
+					return roundTo(secs / 60) + " minutes";
+				}
+			}
 			
+			function displayMessage(secs) {
+				console.log("secs: "+secs);
+				var timeNow = new Date();
+				var wakeTime = new Date(timeNow.getTime() + (secs * 1000));
+				var outputStr = "";
+				outputStr += "Current Time: " + timeNow.toLocaleString();
+				outputStr += "<br>Wakeup Time: " + wakeTime.toLocaleString();
+				outputStr += "<br>Going to sleep for: " + formatDecimalTime(secs);
+				return outputStr;
+			}
+			
+			//http://stackoverflow.com/a/2188651/1091597
+			//Converts strings to date objects
+			function parseTime(timeString) {    
+				if (timeString == '') return null;
+				
+				var time = timeString.match(/(\d+)(:(\d\d))?\s*(p?)/i); 
+				if (time == null) return null;
+				
+				var hours = parseInt(time[1],10);    
+				if (hours == 12 && !time[4]) { hours = 0; }
+				else { hours += (hours < 12 && time[4])? 12 : 0; }   
+				var d = new Date();             
+				d.setHours(hours);
+				d.setMinutes(parseInt(time[3],10) || 0);
+				d.setSeconds(0, 0);  
+				return d;
+		}
 			
 		</script>
 	</body>
