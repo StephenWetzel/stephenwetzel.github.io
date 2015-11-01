@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html><head><title>Youtube Alarm</title>
+<meta charset="UTF-8">
+<link rel=stylesheet href="../css/style.css" type="text/css">
+</head>
+	<body>
+		<!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+		<div id="player"></div>
+		<p>Youtube video ID: <input id='vidId' type='text' size=12 value='DhaRkWfaq10'></p>
+		<p>Time to wait: <input id='sleepTime' type='text' size=3 value='1'></p>
+		<p><input type='button' value='Set Alarm' onclick='startAlarm()'></p>
+		
+		
+		<script>
+			// 2. This code loads the IFrame Player API code asynchronously.
+			var tag = document.createElement('script');
+
+			tag.src = "https://www.youtube.com/iframe_api";
+			var firstScriptTag = document.getElementsByTagName('script')[0];
+			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+			// 3. This function creates an <iframe> (and YouTube player)
+			//    after the API code downloads.
+			function onYouTubeIframeAPIReady() { }
+			
+			//User presses the start Alarm button
+			function startAlarm() {
+				var sleepTime = parseInt(document.getElementById("sleepTime").value);
+				setTimeout(startPlaying, sleepTime * 1 * 1000);
+			}
+			
+			//Timer finishes counting, alarm begins to go off
+			function startPlaying() {
+				var vidId = document.getElementById("vidId").value;
+				var player;
+				player = new YT.Player('player', {
+					height: '390',
+					width: '640',
+					videoId: vidId,
+					//playerVars: { 'loop': 1 },
+					events: {
+						'onReady': onPlayerReady,
+					}
+				});
+			}
+			
+			// 4. The API will call this function when the video player is ready.
+			function onPlayerReady(event) {
+				event.target.playVideo();
+				var vol = 0;
+				setInterval(function() { 
+					event.target.setVolume(vol);
+					vol++
+				}, 1000);
+			}
+			
+			
+			
+		</script>
+	</body>
+</html>
