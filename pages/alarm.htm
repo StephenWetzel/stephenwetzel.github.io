@@ -9,15 +9,16 @@
 		<!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
 		<div id="player"></div>
 		<p>Youtube video ID: <input id='vidId' type='text' size=12 value='DhaRkWfaq10'></p>
+		<p>It should take <input id='wakeupMins' type='text' size=1 value='3'> minutes to reach volume step <input id='volumeStep' type='text' size=1 value='70'> (out of 100).</p>
 		<p>Enter the amount of time to wait:</p>
 		<p>
-			H: <input id='waitHours' type='text' size=2 value='1'>
-			M: <input id='waitMins'  type='text' size=2 value='00'>
-			S: <input id='waitSecs'  type='text' size=2 value='00'>
+			H: <input id='waitHours' type='text' size=1 value='1'>
+			M: <input id='waitMins'  type='text' size=1 value='00'>
+			S: <input id='waitSecs'  type='text' size=1 value='00'>
 			<input type='button' value='Set Alarm' onclick='startAlarmDuration()'></p>
 		<br><br>
 		<p>Or, enter the time to wake up at:</p>
-		<p><input id='waitTime'  type='text' size=12 value=''>
+		<p><input id='waitTime'  type='text' size=15 value='' placeholder='5am, 13:30, 2:15 pm'>
 		<input type='button' value='Set Alarm' onclick='startAlarmTime()'></p>
 		
 		<script>
@@ -37,12 +38,14 @@
 				var sleepTime = parseInt(document.getElementById("waitHours").value);
 				sleepTime = sleepTime * 60 + parseInt(document.getElementById("waitMins").value);
 				sleepTime = sleepTime * 60 + parseInt(document.getElementById("waitSecs").value); //sleepTime is in seconds
+				document.getElementById("message").innerHTML = displayMessage(sleepTime);
 				setTimeout(startPlaying, sleepTime * 1 * 1000);
 			}
 			
 			//User presses the start Alarm button
 			function startAlarmTime() {
 				var sleepTime = parseTime(document.getElementById("waitTime").value) - Date.now();
+				if (sleepTime < 0) { sleepTime += 24*60*60*1000; }
 				//console.log("sleepTime: "+sleepTime/1000);
 				document.getElementById("message").innerHTML = displayMessage(sleepTime/1000);
 				setTimeout(startPlaying, sleepTime);
@@ -65,13 +68,17 @@
 			
 			// 4. The API will call this function when the video player is ready.
 			function onPlayerReady(event) {
+				var pauseTime = parseInt(document.getElementById("wakeupMins").value) / parseInt(document.getElementById("volumeStep").value);
+				pauseTime *= 60 * 1000;
+				//console.log("pauseTime: " + pauseTime);
+				event.target.setVolume(0);
 				event.target.playVideo();
 				var vol = 0;
 				setInterval(function() {
 					//event.target.playVideo();
-					event.target.setVolume(vol);
 					vol++
-				}, 1000);
+					event.target.setVolume(vol);
+				}, pauseTime);
 			}
 			
 			//return a string in the form of "2.11 hours"
