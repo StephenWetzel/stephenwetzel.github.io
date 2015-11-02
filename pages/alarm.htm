@@ -23,7 +23,7 @@
 		<script>
 			// 2. This code loads the IFrame Player API code asynchronously.
 			var tag = document.createElement('script');
-
+			
 			tag.src = "https://www.youtube.com/iframe_api";
 			var firstScriptTag = document.getElementsByTagName('script')[0];
 			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
@@ -43,7 +43,7 @@
 			//User presses the start Alarm button
 			function startAlarmTime() {
 				var sleepTime = parseTime(document.getElementById("waitTime").value) - Date.now();
-				console.log("sleepTime: "+sleepTime/1000);
+				//console.log("sleepTime: "+sleepTime/1000);
 				document.getElementById("message").innerHTML = displayMessage(sleepTime/1000);
 				setTimeout(startPlaying, sleepTime);
 			}
@@ -56,7 +56,7 @@
 					height: '390',
 					width: '640',
 					videoId: vidId,
-					//playerVars: { 'loop': 1 },
+					playerVars: { 'loop': 1, 'playlist': vidId},
 					events: {
 						'onReady': onPlayerReady,
 					}
@@ -67,7 +67,8 @@
 			function onPlayerReady(event) {
 				event.target.playVideo();
 				var vol = 0;
-				setInterval(function() { 
+				setInterval(function() {
+					//event.target.playVideo();
 					event.target.setVolume(vol);
 					vol++
 				}, 1000);
@@ -83,7 +84,7 @@
 			}
 			
 			function displayMessage(secs) {
-				console.log("secs: "+secs);
+				//console.log("secs: "+secs);
 				var timeNow = new Date();
 				var wakeTime = new Date(timeNow.getTime() + (secs * 1000));
 				var outputStr = "";
@@ -110,7 +111,6 @@
 				d.setSeconds(0, 0);  
 				return d;
 		}
-			
 		</script>
 	</body>
 </html>
