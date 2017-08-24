@@ -95,7 +95,7 @@ function gen()
 		user = first+last;
 		if (document.mainform.addrand.checked) user += Math.floor(Math.random()*900) + 100;
 		email = user + "@mailinator.com";
-		url = "http://"+user+".mailinator.com";
+		url = "https://www.mailinator.com/v2/inbox.jsp?query="+user;
 		document.getElementById('url'+i).href=url;
 		
 		document.mainform['first'+i].value=first;
