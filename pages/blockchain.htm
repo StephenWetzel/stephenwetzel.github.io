@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html><head><title>Blockchain Demo</title>
+<meta charset="UTF-8">
+<link rel=stylesheet href="../css/blockchain.css" type="text/css">
+<style type="text/css">
+.main
+{
+  width: 90%;
+}
+
+</style>
+</head>
+<body>
+
+  <div class="generate">
+    <div class="header-hash">previous hash</div>
+    <div class="header-data">data</div>
+    <div class="header-user">username</div>
+    <div class="header-nonce">nonce</div>
+
+    <div class="broken-out-inputs-hash"><input name="previous-hash" type="text" value="" placeholder="Previous Hash" /></div>
+    <div class="broken-out-inputs-data"><input name="data" type="text" value="" placeholder="Data" /></div>
+    <div class="broken-out-inputs-user"><input name="user" type="text" value="" placeholder="User" /></div>
+    <div class="broken-out-inputs-nonce"><span name="nonce">0</span></div>
+    <div class="broken-out-inputs-increment"><button name="increment">Increment</button></div>
+    <div class="broken-out-inputs-decrement"><button name="decrement">Decrement</button></div>
+
+    <div class="input-text-label"><label>Input text</label></div>
+    <div class="input-text-value"><span name="input-text" value=""></span></div>
+
+    <div class="output-label"><label>Output hash</label></div>
+    <div class="output-value"><span name="output"></span></div>
+  </div>
+  <hr>
+  <div class="verify">
+    <div class="verify-input-text-label"><label>Input text</label></div>
+    <div class="verify-input-text-value"><input name="verify-hash" type="text" value="" placeholder="text" /></div>
+
+    <div class="verify-output-label"><label>Output hash</label></div>
+    <div class="verify-output-value"><span name="verify-output">verify</span></div>
+  </div>
+
+
+</body>
+</html>
