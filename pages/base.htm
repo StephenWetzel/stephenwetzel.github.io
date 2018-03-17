@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html><head><title>Base Conversion</title>
+<meta charset="UTF-8">
+<link rel=stylesheet href="../css/style.css" type="text/css">
+<script type="text/javascript"></script>
+<style type="text/css">
+table {padding-bottom:20px;}
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+th {
+	padding-left:  1em;
+	padding-right: 1em;
+	padding-top:    .5em;
+	padding-bottom: .5em;
+}
+tr:nth-child(even), thead {
+	background-color: #ded;
+}
+</style>
+</head>
+<body class="reading">
+
+<form name="mainform" action="base.htm">
+<table id="baseTable">
+<thead><tr><th> </th><th>Decimal</th><th>Binary</th><th>Trinary</th><th>Octal</th><th>Hex</th><th>Base 26 </th><th>Base 36</th><th>Base 64</th></tr></thead>
+<tr>
+	<td>Enter:</td>
+	<td><input id='10input' type='text' size=5 value='0'></td>
+	<td><input id='2input'  type='text' size=8 value='0'></td>
+	<td><input id='3input'  type='text' size=7 value='0'></td>
+	<td><input id='8input'  type='text' size=6 value='0'></td>
+	<td><input id='16input' type='text' size=5 value='0'></td>
+	<td><input id='26input' type='text' size=5 value='0'></td>
+	<td><input id='36input' type='text' size=5 value='0'></td>
+	<td><input id='64input' type='text' size=5 value='0'></td>
+</tr>
+<tr>
+	<td id='10label'>Decimal</td>
+	<td id='10to10'>0</td>
+	<td id='2to10'></td>
+	<td id='3to10'></td>
+	<td id='8to10'></td>
+	<td id='16to10'></td>
+	<td id='26to10'></td>
+	<td id='36to10'></td>
+	<td id='64to10'></td>
+</tr>
+<tr>
+	<td id='2label'>Binary</td>
+	<td id='10to2'>0</td>
+	<td id='2to2'></td>
+	<td id='3to2'></td>
+	<td id='8to2'></td>
+	<td id='16to2'></td>
+	<td id='26to2'></td>
+	<td id='36to2'></td>
+	<td id='64to2'></td>
+</tr>
+<tr>
+	<td id='3label'>Trinary</td>
+	<td id='10to3'>0</td>
+	<td id='2to3'></td>
+	<td id='3to3'></td>
+	<td id='8to3'></td>
+	<td id='16to3'></td>
+	<td id='26to3'></td>
+	<td id='36to3'></td>
+	<td id='64to3'></td>
+</tr>
+<tr>
+	<td id='8label'>Octal</td>
+	<td id='10to8'>0</td>
+	<td id='2to8'></td>
+	<td id='3to8'></td>
+	<td id='8to8'></td>
+	<td id='16to8'></td>
+	<td id='26to8'></td>
+	<td id='36to8'></td>
+	<td id='64to8'></td>
+</tr>
+<tr>
+	<td id='16label'>Hex</td>
+	<td id='10to16'>0</td>
+	<td id='2to16'></td>
+	<td id='3to16'></td>
+	<td id='8to16'></td>
+	<td id='16to16'></td>
+	<td id='26to16'></td>
+	<td id='36to16'></td>
+	<td id='64to16'></td>
+</tr>
+<tr>
+	<td id='26label'>Base 26</td>
+	<td id='10to26'>0</td>
+	<td id='2to26'></td>
+	<td id='3to26'></td>
+	<td id='8to26'></td>
+	<td id='16to26'></td>
+	<td id='26to26'></td>
+	<td id='36to26'></td>
+	<td id='64to26'></td>
+</tr>
+<tr>
+	<td id='36label'>Base 36</td>
+	<td id='10to36'>0</td>
+	<td id='2to36'></td>
+	<td id='3to36'></td>
+	<td id='8to36'></td>
+	<td id='16to36'></td>
+	<td id='26to36'></td>
+	<td id='36to36'></td>
+	<td id='64to36'></td>
+</tr>
+<tr>
+	<td id='64label'>Base 64</td>
+	<td id='10to64'>0</td>
+	<td id='2to64'></td>
+	<td id='3to64'></td>
+	<td id='8to64'></td>
+	<td id='16to64'></td>
+	<td id='26to64'></td>
+	<td id='36to64'></td>
+	<td id='64to64'></td>
+</tr>
+<tr>
+	<td id='lengthLabel'>Length</td>
+	<td><input id='10length' type='text' size=5 value='4'></td>
+	<td><input id='2length'  type='text' size=5 value='4'></td>
+	<td><input id='3length'  type='text' size=5 value='4'></td>
+	<td><input id='8length'  type='text' size=5 value='4'></td>
+	<td><input id='16length' type='text' size=5 value='4'></td>
+	<td><input id='26length' type='text' size=5 value='4'></td>
+	<td><input id='36length' type='text' size=5 value='4'></td>
+	<td><input id='64length' type='text' size=5 value='4'></td>
+</tr>
+<tr>
+	<td id='lengthLabel'>Negative Type</td>
+	<td><select id="10neg">
+		<option value="minus" selected>Minus Sign</option>
+		<option value="mag">Sign Mag</option>
+		<option value="ones">One's Comp</option>
+		<option value="twos">Two's Comp</option>
+	</select></td>
+	<td><select id="2neg">
+		<option value="minus">Minus Sign</option>
+		<option value="mag">Sign Mag</option>
+		<option value="ones">One's Comp</option>
+		<option value="twos" selected>Two's Comp</option>
+	</select></td>
+	<td><select id="3neg">
+		<option value="minus" selected>Minus Sign</option>
+		<option value="mag">Sign Mag</option>
+		<option value="ones">One's Comp</option>
+		<option value="twos">Two's Comp</option>
+	</select></td>
+	<td><select id="8neg">
+		<option value="minus" selected>Minus Sign</option>
+		<option value="mag">Sign Mag</option>
+		<option value="ones">One's Comp</option>
+		<option value="twos">Two's Comp</option>
+	</select></td>
+	<td><select id="16neg">
+		<option value="minus" selected>Minus Sign</option>
+		<option value="mag">Sign Mag</option>
+		<option value="ones">One's Comp</option>
+		<option value="twos">Two's Comp</option>
+	</select></td>
+	<td><select id="26neg">
+		<option value="minus" selected>Minus Sign</option>
+		<option value="mag">Sign Mag</option>
+		<option value="ones">One's Comp</option>
+		<option value="twos">Two's Comp</option>
+	</select></td>
+	<td><select id="36neg">
+		<option value="minus" selected>Minus Sign</option>
+		<option value="mag">Sign Mag</option>
+		<option value="ones">One's Comp</option>
+		<option value="twos">Two's Comp</option>
+	</select></td>
+	<td><select id="64neg" selected>
+		<option value="minus">Minus Sign</option>
+		<option value="mag">Sign Mag</option>
+		<option value="ones">One's Comp</option>
+		<option value="twos">Two's Comp</option>
+	</select></td>
+</tr>
+
+
+</table>
+<input type='button' value='Recalc' onclick='calc()'>
+
+</form>
+
+<hr>
+<p>Convert Bases</p>
+
+
+<script src="../js/shared.js"></script>
+<script type="text/javascript">
+<!--
+var link=document.mainform //short cut
+
+var bases = [2, 3, 8, 10, 16, 26, 36];
+//var bases = [2, 10];
+var negMode = 2;
+var byteLength = 6;
+
+//use '-' sign, sign-mag, one's comp, two's comp
+var modes = {
+	2:  {'sign': 'twos',  'length': 8},
+	3:  {'sign': 'minus', 'length': 4},
+	8:  {'sign': 'minus', 'length': 4},
+	10: {'sign': 'minus', 'length': 4},
+	16: {'sign': 'minus', 'length': 2},
+	26: {'sign': 'minus', 'length': 4},
+	36: {'sign': 'minus', 'length': 4},
+	64: {'sign': 'minus', 'length': 4}
+	}
+
+function getModes()
+{
+	for (var ii = 0; ii < bases.length; ii++)
+	{
+		modes[bases[ii]].length = document.getElementById(bases[ii] + 'length').value;
+		modes[bases[ii]].sign = document.getElementById(bases[ii] + 'neg').value;
+	}
+}
+
+function convert(fromBase, toBase)
+{
+	console.log("fromBase: ", fromBase, ", toBase: ",toBase);
+	var inNum = document.getElementById(fromBase + 'input').value;
+	var base10 = parseInt(parseInt(inNum, fromBase).toString(10));
+	console.log("inNum: ", inNum, ", base10: ",base10);
+	
+	if (base10 < 0)
+	{
+		if (modes[fromBase].sign == 'ones')
+		{
+			base10 -= Math.pow(fromBase, modes[fromBase].length);
+			base10++;
+		}
+		else if (modes[fromBase].sign == 'twos')
+		{
+			base10 -= Math.pow(fromBase, modes[fromBase].length);
+		}
+	}
+	
+	console.log("inNum: ", inNum, ", base10: ",base10);
+	if (base10 < 0)
+	{
+		if (modes[toBase].sign == 'mag')
+		{//sign magnitude
+			base10 = Math.abs(base10) >>> 0;
+		}
+		else if (modes[toBase].sign == 'ones')
+		{//one's complement, invert bits
+			base10 = ~Math.abs(base10) >>> 0;
+		}
+		else if (modes[toBase].sign == 'twos')
+		{//two's complement
+			base10 >>>= 0; //force to unsigned
+		}
+	}
+	
+	var outNum = base10.toString(toBase);
+	
+	if (toBase == 2)
+	{
+		outNum = outNum.substring(outNum.length - modes[toBase].length, outNum.length);
+	}
+	else if (toBase == 16)
+	{
+		outNum = outNum.substring(outNum.length - modes[toBase].length, outNum.length);
+	}	
+	document.getElementById(fromBase + 'to' + toBase).innerHTML = outNum;
+}
+
+function calc()
+{
+	getModes();
+	for (var ii = 0; ii < bases.length; ii++)
+	{
+		for (var jj = 0; jj < bases.length; jj++)
+		{
+			convert(bases[ii], bases[jj]);
+		}
+	}
+}
+
+-->
+</script>
+
+</body></html>
