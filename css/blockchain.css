@@ -7,15 +7,15 @@ input {
   width: 90%;
 }
 
+.highlighted {
+  color: red;
+}
+
 .generate {
   display: grid;
   grid-gap: 10px;
   grid-template-columns: repeat(11, [col] 5% ) ;
   grid-template-rows: repeat(4, [row] 3em ) ;
-}
-
-.box {
-
 }
 
 .header-hash {
@@ -78,7 +78,18 @@ input {
   grid-row: row 4;
 }
 .output-value {
-  grid-column: col 3 / span 5;
+  grid-column: col 3 / span 6;
+  grid-row: row 4;
+  font-family: monospace;
+  color: #eee;
+  background-color: #111;
+}
+.output-zero-label {
+  grid-column: col 10;
+  grid-row: row 4;
+}
+.output-counter {
+  grid-column: col 11;
   grid-row: row 4;
 }
 

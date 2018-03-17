@@ -13,10 +13,10 @@
 <body>
 
   <div class="generate">
-    <div class="header-hash">previous hash</div>
-    <div class="header-data">data</div>
-    <div class="header-user">username</div>
-    <div class="header-nonce">nonce</div>
+    <div class="header-hash">Previous hash</div>
+    <div class="header-data">Data</div>
+    <div class="header-user">User</div>
+    <div class="header-nonce">Nonce</div>
 
     <div class="broken-out-inputs-hash"><input id="previous-hash" type="text" value="" placeholder="Previous Hash" onkeyup="generate_hash()" /></div>
     <div class="broken-out-inputs-data"><input id="data" type="text" value="" placeholder="Data" onkeyup="generate_hash()" /></div>
@@ -30,7 +30,9 @@
     <div class="input-text-value"><span id="input-text" value=""></span></div>
 
     <div class="output-label"><label>Output hash</label></div>
-    <div class="output-value"><span id="output"></span></div>
+    <div class="output-value"><span id="output">5948461a44d43e2d2c8c222ea87dcb5a7ea3549ab5a90215ead48d5e93e617ea</span></div>
+    <div class="output-zero-label"><label>Zeros:</label></div>
+    <div class="output-counter"><span id="counter">0</span></div>
   </div>
   <hr>
   <div class="verify">
@@ -45,6 +47,7 @@
 <script type="text/javascript">
 <!--
 var LOWER_HEX = "0123456789abcdef";
+var DELIMITER = ';'
 
 function reset() {
   document.getElementById('nonce').textContent = '0'
@@ -63,14 +66,23 @@ function generate_hash() {
   data = document.getElementById('data').value
   user = document.getElementById('user').value
   nonce = document.getElementById('nonce').textContent
-  combined_input = previous_hash + ':' + data + ':' + user + ':' + nonce
+  combined_input = previous_hash + DELIMITER + data + DELIMITER + user + DELIMITER + nonce
   document.getElementById('input-text').textContent = combined_input
-  document.getElementById('output').textContent = any_sha256(combined_input, LOWER_HEX)
+  digest = any_sha256(combined_input, LOWER_HEX)
+  document.getElementById('output').textContent = digest
+  document.getElementById('counter').textContent = count_leading_chars(digest, '0')
 }
 
 function verify_hash() {
   input_text = document.getElementById('verify-text').value
   document.getElementById('verify-hash').textContent = any_sha256(input_text, LOWER_HEX)
+}
+
+function count_leading_chars(string, char) {
+  for (var ii = 0; ii < string.length; ii++) {
+    if (string[ii] != char) { break; }
+  }
+  return ii;
 }
 -->
 </script>
