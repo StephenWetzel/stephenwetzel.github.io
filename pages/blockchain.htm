@@ -18,9 +18,9 @@
     <div class="header-user">User</div>
     <div class="header-nonce">Nonce</div>
 
-    <div class="broken-out-inputs-hash"><input id="previous-hash" type="text" value="" placeholder="Previous Hash" onkeyup="generate_hash()" /></div>
-    <div class="broken-out-inputs-data"><input id="data" type="text" value="" placeholder="Data" onkeyup="generate_hash()" /></div>
-    <div class="broken-out-inputs-user"><input id="user" type="text" value="" placeholder="User" onkeyup="generate_hash()" /></div>
+    <div class="broken-out-inputs-hash"><input id="previous-hash" type="text" value="" placeholder="Previous Hash" onkeyup="generate_hash()" onblur="generate_hash()" /></div>
+    <div class="broken-out-inputs-data"><input id="data" type="text" value="" placeholder="Data" onkeyup="generate_hash()" onblur="generate_hash()" /></div>
+    <div class="broken-out-inputs-user"><input id="user" type="text" value="" placeholder="User" onkeyup="generate_hash()" onblur="generate_hash()" /></div>
     <div class="broken-out-inputs-nonce"><span id="nonce">0</span></div>
     <div class="broken-out-inputs-increment"><button id="increment" onclick="increment(1)">Increment</button></div>
     <div class="broken-out-inputs-decrement"><button id="decrement" onclick="increment(-1)">Decrement</button></div>
@@ -37,7 +37,7 @@
   <hr>
   <div class="verify">
     <div class="verify-input-text-label"><label>Input text</label></div>
-    <div class="verify-input-text-value"><input id="verify-text" type="text" value="" placeholder="text" onkeyup="verify_hash()" /></div>
+    <div class="verify-input-text-value"><input id="verify-text" type="text" value="" placeholder="text" onkeyup="verify_hash()" onblur="verify_hash()" /></div>
 
     <div class="verify-output-label"><label>Output hash</label></div>
     <div class="verify-output-value"><span id="verify-hash">verify</span></div>
