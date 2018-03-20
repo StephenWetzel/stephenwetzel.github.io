@@ -45,8 +45,8 @@
   </div>
   <hr>
   <h2>Explanation</h2>
-  <p>A blockchain works by taking a piece of data we want to record, combining it with a nonce (an arbitrary number that can only be used once), and the hash of the previous block.  If this is the first block, a special genesis hash is used, which can be anything agreed upon by the users.  The combination of those values is then hashed itself.</p>
-  <p>In the case of proof of work blockchains, the nonce can be incremented until the hash meets some condition.  For example a certain number of leading 0s in the hash.  Setting this requirement proves that time was spent generating the hash, and ensures that finding a different hash that also meets the requirement would take a significant amount of additional time.</p>
+  <p>Blockchains allow us to record data in a way that becomes harder to change the older it is.  To add a block to the chain we take the piece of data we want to record, and combine it with the hash of the previous block.  This combination is hashed and the result is the hash of this block.  If this is the first block, a special genesis hash is used, which can be anything agreed upon by the users.  </p>
+  <p>In the case of proof of work blockchains, an added nonce (an arbitrary number that is only be used once) can be combined with the data and previous hash.  The nonce is incremented until the hash meets some condition, eg, a certain number of leading 0s in the hash.  Setting this requirement proves that time was spent generating the hash, and ensures that finding a different hash that also meets the requirement would take a significant amount of additional time.</p>
   <p>Upon finding a hash that meets the requirement, the nodes in the blockchain can immediately switch to finding the next block, using the newly found hash as the previous hash.  Changing a block in the chain would require finding a new hash for every block that came after it.  Therefore, each block added to a chain increases the security of previous blocks.</p>
 
 <script src="../js/hashfunctions.js"></script>
