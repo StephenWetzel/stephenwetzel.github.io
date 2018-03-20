@@ -11,7 +11,7 @@
 </style>
 </head>
 <body>
-
+  <h2>Generate Blockchain</h2>
   <div class="generate">
     <div class="header-hash">Previous hash</div>
     <div class="header-data">Data</div>
@@ -26,28 +26,38 @@
     <div class="broken-out-inputs-decrement"><button id="decrement" onclick="increment(-1)">Decrement</button></div>
     <div class="broken-out-inputs-reset"><button id="reset" onclick="reset()">Reset</button></div>
 
-    <div class="input-text-label"><label>Input text</label></div>
-    <div class="input-text-value"><span id="input-text" value=""></span></div>
+    <div class="input-text-label"><label>Combined Input</label></div>
+    <div class="input-text-value"><span id="input-text"></span></div>
 
     <div class="output-label"><label>Output hash</label></div>
-    <div class="output-value"><span id="output">5948461a44d43e2d2c8c222ea87dcb5a7ea3549ab5a90215ead48d5e93e617ea</span></div>
+    <div class="output-value"><span class="digest" id="output"></span></div>
     <div class="output-zero-label"><label>Zeros:</label></div>
     <div class="output-counter"><span id="counter">0</span></div>
   </div>
   <hr>
+  <h2>Verify Blockchain</h2>
   <div class="verify">
-    <div class="verify-input-text-label"><label>Input text</label></div>
+    <div class="verify-input-text-label"><label>Text to Verify</label></div>
     <div class="verify-input-text-value"><input id="verify-text" type="text" value="" placeholder="text" onkeyup="verify_hash()" onblur="verify_hash()" /></div>
 
     <div class="verify-output-label"><label>Output hash</label></div>
-    <div class="verify-output-value"><span id="verify-hash">verify</span></div>
+    <div class="verify-output-value"><span class="digest" id="verify-hash"></span></div>
   </div>
+  <hr>
+  <h2>Explanation</h2>
+  <p>A blockchain works by taking a piece of data we want to record, combining it with a nonce (an arbitrary number that can only be used once), and the hash of the previous block.  If this is the first block, a special genesis hash is used, which can be anything agreed upon by the users.  The combination of those values is then hashed itself.</p>
+  <p>In the case of proof of work blockchains, the nonce can be incremented until the hash meets some condition.  For example a certain number of leading 0s in the hash.  Setting this requirement proves that time was spent generating the hash, and ensures that finding a different hash that also meets the requirement would take a significant amount of additional time.</p>
+  <p>Upon finding a hash that meets the requirement, the nodes in the blockchain can immediately switch to finding the next block, using the newly found hash as the previous hash.  Changing a block in the chain would require finding a new hash for every block that came after it.  Therefore, each block added to a chain increases the security of previous blocks.</p>
 
 <script src="../js/hashfunctions.js"></script>
 <script type="text/javascript">
 <!--
 var LOWER_HEX = "0123456789abcdef";
 var DELIMITER = ';'
+window.onload = function() {
+  generate_hash()
+  verify_hash()
+};
 
 function reset() {
   document.getElementById('nonce').textContent = '0'

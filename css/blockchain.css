@@ -13,7 +13,6 @@ input {
 
 .generate {
   display: grid;
-  grid-gap: 10px;
   grid-template-columns: repeat(11, [col] 5% ) ;
   grid-template-rows: repeat(4, [row] 3em ) ;
 }
@@ -90,12 +89,16 @@ input {
   grid-column: col 15;
   grid-row: row 4;
 }
-
-#output {
+.digest {
   font-family: monospace;
   color: #eee;
   background-color: #111;
   padding: 1em;
+}
+
+hr {
+  margin-top: 1em;
+  margin-bottom: 3em;
 }
 
 .verify {
