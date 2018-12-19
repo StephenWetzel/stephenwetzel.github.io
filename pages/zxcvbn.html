@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Password</title>
+    <style>
+      .wrapper {
+        display: grid;
+        grid-template-columns: 400px 400px;
+        grid-gap: 10px;
+      }
+      .result {
+        border-radius: 5px;
+        padding: 20px;
+      }
+      .old {
+        grid-column: 1 / 2;
+        grid-row: 2 / 2;
+      }
+      .new {
+        grid-column: 2 / 2;
+        grid-row: 2 / 2;
+      }
+      .input {
+        grid-column: 1 / 1;
+        grid-row: 1 / 2 ;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div class='wrapper'>
+      <input class='result input' type='text' size='50'/>
+      <div class='result old'>
+        <h3>zxcvbn 3.5</h3>
+        <table>
+          <tr><td>password:</td><td id='password-old'></td></tr>
+          <tr><td>guesses:</td><td id='guesses-old'></td></tr>
+          <tr><td>guesses_log2:</td><td id='log-old'></td></tr>
+          <tr><td>score:</td><td id='score-old'></td></tr>
+          <tr><td>function runtime (ms):</td><td id='runtime-old'></td></tr>
+          <tr><td>100 / hour:</td><td id='throttled-old'></td></tr>
+          <tr><td>10  / second:</td><td id='unthrottled-old'></td></tr>
+          <tr><td>10k / second:</td><td id='slow-hash-old'></td></tr>
+          <tr><td>10B / second:</td><td id='fast-hash-old'></td></tr>
+        </table>
+        <pre id='raw-old'></pre>
+      </div>
+      <div class='result new'>
+        <h3>zxcvbn 4.4.2</h3>
+        <table>
+          <tr><td>password:</td><td id='password-new'></td></tr>
+          <tr><td>guesses:</td><td id='guesses-new'></td></tr>
+          <tr><td>guesses_log10:</td><td id='log-new'></td></tr>
+          <tr><td>score:</td><td id='score-new'></td></tr>
+          <tr><td>function runtime (ms):</td><td id='runtime-new'></td></tr>
+          <tr><td>100 / hour:</td><td id='throttled-new'></td></tr>
+          <tr><td>10  / second:</td><td id='unthrottled-new'></td></tr>
+          <tr><td>10k / second:</td><td id='slow-hash-new'></td></tr>
+          <tr><td>10B / second:</td><td id='fast-hash-new'></td></tr>
+        </table>
+        <pre id='raw-new'></pre>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      // TODO:
+      // Masking option
+      // Display patterns
+      // responsive
+      SECONDS_IN_1000_CENTURIES = 60 * 60 * 24 * 365.2425 * 100 * 1000;
+      SECONDS_IN_CENTURY = 60 * 60 * 24 * 365.2425 * 100;
+      SECONDS_IN_YEAR = 60 * 60 * 24 * 365.2425;
+      SECONDS_IN_DAY = 60 * 60 * 24;
+      SECONDS_IN_HOUR = 60 * 60;
+      SECONDS_IN_MINUTE = 60;
+
+      function convert_guesses_to_time(guesses, per_second) {
+        seconds = guesses / 2 / per_second;
+        if (seconds > SECONDS_IN_1000_CENTURIES) return "many centuries";
+        if (seconds > SECONDS_IN_CENTURY) return Math.round(seconds / SECONDS_IN_CENTURY) + " centuries";
+        if (seconds > SECONDS_IN_YEAR) return Math.round(seconds / SECONDS_IN_YEAR) + " years";
+        if (seconds > SECONDS_IN_DAY) return Math.round(seconds / SECONDS_IN_DAY) + " days";
+        if (seconds > SECONDS_IN_HOUR) return Math.round(seconds / SECONDS_IN_HOUR) + " hours";
+        if (seconds > SECONDS_IN_MINUTE) return Math.round(seconds / SECONDS_IN_MINUTE) + " minutes";
+        return Math.round(seconds) + " seconds";
+      }
+
+      window.addEventListener('input', function (e) {
+        zxcvbn_old = zxcvbn35(e.target.value);
+        zxcvbn_new = zxcvbn442(e.target.value);
+        // document.getElementById('raw-old').innerHTML = JSON.stringify(zxcvbn_old);
+        document.getElementById('guesses-old').innerHTML = Math.round(2**zxcvbn_old.entropy);
+        document.getElementById('log-old').innerHTML = zxcvbn_old.entropy;
+        document.getElementById('password-old').innerHTML = zxcvbn_old.password;
+        document.getElementById('score-old').innerHTML = zxcvbn_old.score;
+        document.getElementById('runtime-old').innerHTML = zxcvbn_old.calc_time;
+        document.getElementById('throttled-old').innerHTML = convert_guesses_to_time(2**zxcvbn_old.entropy, 0.027778);
+        document.getElementById('unthrottled-old').innerHTML = convert_guesses_to_time(2**zxcvbn_old.entropy, 10);
+        document.getElementById('slow-hash-old').innerHTML = convert_guesses_to_time(2**zxcvbn_old.entropy, 10000);
+        document.getElementById('fast-hash-old').innerHTML = convert_guesses_to_time(2**zxcvbn_old.entropy, 10000000000);
+
+        // document.getElementById('raw-new').innerHTML = JSON.stringify(zxcvbn_new);
+        document.getElementById('guesses-new').innerHTML = zxcvbn_new.guesses;
+        document.getElementById('log-new').innerHTML = zxcvbn_new.guesses_log10;
+        document.getElementById('password-new').innerHTML = zxcvbn_new.password;
+        document.getElementById('score-new').innerHTML = zxcvbn_new.score;
+        document.getElementById('runtime-new').innerHTML = zxcvbn_new.calc_time;
+        document.getElementById('throttled-new').innerHTML = zxcvbn_new.crack_times_display.online_throttling_100_per_hour;
+        document.getElementById('unthrottled-new').innerHTML = zxcvbn_new.crack_times_display.online_no_throttling_10_per_second;
+        document.getElementById('slow-hash-new').innerHTML = zxcvbn_new.crack_times_display.offline_slow_hashing_1e4_per_second;
+        document.getElementById('fast-hash-new').innerHTML = zxcvbn_new.crack_times_display.offline_fast_hashing_1e10_per_second;
+
+        console.log(zxcvbn_old);
+        console.log(zxcvbn_new);
+      }, false);
+    </script>
+
+    <script type="text/javascript" src="../js/zxcvbn.4.4.2.js"></script>
+    <script type="text/javascript" src="../js/zxcvbn.3.5.js"></script>
+  </body>
+</html>
