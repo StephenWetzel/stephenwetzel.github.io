@@ -5,26 +5,48 @@
     <style>
       .wrapper {
         display: grid;
-        grid-template-columns: 400px 400px;
-        grid-gap: 10px;
       }
       .result {
         border-radius: 5px;
         padding: 20px;
+        font-family: monospace;
+        background-color: #333;
+        color: #eee;
       }
-      .old {
-        grid-column: 1 / 2;
-        grid-row: 2 / 2;
+      p {
+        margin: 0.3em;
       }
-      .new {
-        grid-column: 2 / 2;
-        grid-row: 2 / 2;
-      }
-      .input {
-        grid-column: 1 / 1;
-        grid-row: 1 / 2 ;
+      .explanation {
+        font-family: sans-serif;
       }
 
+      @media (min-width: 600px) {
+        .wrapper {
+          display: grid;
+          grid-template-areas: "input input"
+                               "old  new"
+                               "explanation explanation";
+          grid-template-columns: 1fr 1fr;
+          grid-template-rows: 1fr;
+          grid-gap: 10px;
+        }
+        .result {
+          border-radius: 5px;
+          padding: 20px;
+        }
+        .input {
+          grid-area: input;
+        }
+        .old {
+          grid-area: old;
+        }
+        .new {
+          grid-area: new;
+        }
+        .explanation {
+          grid-area: explanation;
+        }
+      }
     </style>
   </head>
   <body>
@@ -60,13 +82,21 @@
         </table>
         <pre id='raw-new'></pre>
       </div>
+      <div class='explanation'>
+        <p>Implementation of <a href='https://github.com/dropbox/zxcvbn'>Dropbox's zxcvbn</a>, comparing the old algorithm to the new one.</p>
+        <br>
+        <p>Here are some rough guidelines for speeds of different attacks.</p>
+        <p>online attack on a service that ratelimits password auth attempts: <strong>100 / hour</strong></p>
+        <p>online attack on a service that doesn't ratelimit, or where an attacker has outsmarted ratelimiting: <strong>10 / second</strong></p>
+        <p>offline attack, proper user-unique salting, and a slow hash function, such as bcrypt, scrypt, PBKDF2: <strong>10k / second</strong></p>
+        <p>offline attack with user-unique salting but a fast hash function like SHA-1, SHA-256 or MD5: <strong>10B / second</strong></p>
+      </div>
     </div>
 
     <script type="text/javascript">
       // TODO:
       // Masking option
       // Display patterns
-      // responsive
       SECONDS_IN_1000_CENTURIES = 60 * 60 * 24 * 365.2425 * 100 * 1000;
       SECONDS_IN_CENTURY = 60 * 60 * 24 * 365.2425 * 100;
       SECONDS_IN_YEAR = 60 * 60 * 24 * 365.2425;
@@ -110,8 +140,8 @@
         document.getElementById('slow-hash-new').innerHTML = zxcvbn_new.crack_times_display.offline_slow_hashing_1e4_per_second;
         document.getElementById('fast-hash-new').innerHTML = zxcvbn_new.crack_times_display.offline_fast_hashing_1e10_per_second;
 
-        console.log(zxcvbn_old);
-        console.log(zxcvbn_new);
+        // console.log(zxcvbn_old);
+        // console.log(zxcvbn_new);
       }, false);
     </script>
 
