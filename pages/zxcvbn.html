@@ -9,6 +9,7 @@
       display: grid;
       grid-template-areas: "input input"
                            "old  new"
+                           "mask mask"
                            "explanation explanation";
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr;
@@ -22,24 +23,16 @@
       background-color: #333;
       color: #eee;
     }
-    .input {
-      grid-area: input;
-    }
-    .old {
-      grid-area: old;
-    }
-    .new {
-      grid-area: new;
-    }
+    .input {grid-area: input;}
+    .old {grid-area: old;}
+    .new {grid-area: new;}
+    .mask {grid-area: mask;}
     .explanation {
       grid-area: explanation;
+      font-family: sans-serif;
     }
-
     p {
       margin: 0.3em;
-    }
-    .explanation {
-      font-family: sans-serif;
     }
 
     @media (max-width: 500px) {
@@ -47,6 +40,7 @@
         grid-template-areas: "input"
                              "old"
                              "new"
+                             "mask"
                              "explanation";
       }
       .result {
@@ -57,7 +51,7 @@
 </head>
 <body>
   <div class='wrapper'>
-    <input class='result input' type='text' size='50'/>
+    <input class='result input' id='password-input' type='password'/>
     <div class='result old'>
       <h3>zxcvbn 3.5</h3>
       <table>
@@ -88,6 +82,7 @@
       </table>
       <pre id='raw-new'></pre>
     </div>
+    <div class='mask'>mask: <input type='checkbox' id='toggle-mask' checked/></div>
     <div class='explanation'>
       <p>Implementation of <a href='https://github.com/dropbox/zxcvbn'>Dropbox's zxcvbn</a>, comparing the old algorithm to the new one.</p>
       <br>
@@ -101,7 +96,6 @@
 
   <script type="text/javascript">
     // TODO:
-    // Masking option
     // Display patterns
     SECONDS_IN_1000_CENTURIES = 60 * 60 * 24 * 365.2425 * 100 * 1000;
     SECONDS_IN_CENTURY = 60 * 60 * 24 * 365.2425 * 100;
@@ -121,10 +115,15 @@
       return Math.round(seconds) + " seconds";
     }
 
-    window.addEventListener('input', function (e) {
-      zxcvbn_old = zxcvbn35(e.target.value);
-      zxcvbn_new = zxcvbn442(e.target.value);
-      // document.getElementById('raw-old').innerHTML = JSON.stringify(zxcvbn_old);
+
+    function find_password_strength() {
+      password_input = document.getElementById('password-input').value
+      zxcvbn_old = zxcvbn35(password_input);
+      zxcvbn_new = zxcvbn442(password_input);
+      if (document.getElementById('toggle-mask').checked) {
+        zxcvbn_old.password = '****'
+        zxcvbn_new.password = '****'
+      }
       document.getElementById('guesses-old').innerHTML = Math.round(2**zxcvbn_old.entropy);
       document.getElementById('log-old').innerHTML = zxcvbn_old.entropy;
       document.getElementById('password-old').innerHTML = zxcvbn_old.password;
@@ -148,7 +147,17 @@
 
       // console.log(zxcvbn_old);
       // console.log(zxcvbn_new);
+    }
+
+    document.getElementById('password-input').addEventListener('input', function (e) {
+      find_password_strength();
     }, false);
+
+    document.getElementById('toggle-mask').addEventListener('change', onToggleMaskChange);
+    function onToggleMaskChange(){
+      document.getElementById('password-input').type = this.checked ? 'password' : 'text';
+      find_password_strength();
+    }
   </script>
 
   <script type="text/javascript" src="../js/zxcvbn.4.4.2.js"></script>
