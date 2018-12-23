@@ -57,7 +57,8 @@
       <table>
         <tr><td>password:</td><td id='password-old'></td></tr>
         <tr><td>guesses:</td><td id='guesses-old'></td></tr>
-        <tr><td>guesses_log2:</td><td id='log-old'></td></tr>
+        <tr><td>guesses_log2 (bits):</td><td id='log2-old'></td></tr>
+        <tr><td>guesses_log10:</td><td id='log10-old'></td></tr>
         <tr><td>score:</td><td id='score-old'></td></tr>
         <tr><td>function runtime (ms):</td><td id='runtime-old'></td></tr>
         <tr><td>100 / hour:</td><td id='throttled-old'></td></tr>
@@ -72,7 +73,8 @@
       <table>
         <tr><td>password:</td><td id='password-new'></td></tr>
         <tr><td>guesses:</td><td id='guesses-new'></td></tr>
-        <tr><td>guesses_log10:</td><td id='log-new'></td></tr>
+        <tr><td>guesses_log2 (bits):</td><td id='log2-new'></td></tr>
+        <tr><td>guesses_log10:</td><td id='log10-new'></td></tr>
         <tr><td>score:</td><td id='score-new'></td></tr>
         <tr><td>function runtime (ms):</td><td id='runtime-new'></td></tr>
         <tr><td>100 / hour:</td><td id='throttled-new'></td></tr>
@@ -97,6 +99,7 @@
   <script type="text/javascript">
     // TODO:
     // Display patterns
+    // Visualize score, maybe with colors
     SECONDS_IN_1000_CENTURIES = 60 * 60 * 24 * 365.2425 * 100 * 1000;
     SECONDS_IN_CENTURY = 60 * 60 * 24 * 365.2425 * 100;
     SECONDS_IN_YEAR = 60 * 60 * 24 * 365.2425;
@@ -115,7 +118,6 @@
       return Math.round(seconds) + " seconds";
     }
 
-
     function find_password_strength() {
       password_input = document.getElementById('password-input').value
       zxcvbn_old = zxcvbn35(password_input);
@@ -124,8 +126,10 @@
         zxcvbn_old.password = '****'
         zxcvbn_new.password = '****'
       }
-      document.getElementById('guesses-old').innerHTML = Math.round(2**zxcvbn_old.entropy);
-      document.getElementById('log-old').innerHTML = zxcvbn_old.entropy;
+      zxcvbn_old.guesses = Math.round(2**zxcvbn_old.entropy);
+      document.getElementById('guesses-old').innerHTML = zxcvbn_old.guesses;
+      document.getElementById('log2-old').innerHTML = zxcvbn_old.entropy;
+      document.getElementById('log10-old').innerHTML = roundTo(lg(zxcvbn_old.guesses), 2);
       document.getElementById('password-old').innerHTML = zxcvbn_old.password;
       document.getElementById('score-old').innerHTML = zxcvbn_old.score;
       document.getElementById('runtime-old').innerHTML = zxcvbn_old.calc_time;
@@ -136,7 +140,8 @@
 
       // document.getElementById('raw-new').innerHTML = JSON.stringify(zxcvbn_new);
       document.getElementById('guesses-new').innerHTML = zxcvbn_new.guesses;
-      document.getElementById('log-new').innerHTML = zxcvbn_new.guesses_log10;
+      document.getElementById('log2-new').innerHTML = roundTo(lb(zxcvbn_new.guesses), 2);
+      document.getElementById('log10-new').innerHTML = roundTo(zxcvbn_new.guesses_log10, 2);
       document.getElementById('password-new').innerHTML = zxcvbn_new.password;
       document.getElementById('score-new').innerHTML = zxcvbn_new.score;
       document.getElementById('runtime-new').innerHTML = zxcvbn_new.calc_time;
@@ -160,6 +165,7 @@
     }
   </script>
 
+  <script type="text/javascript" src="../js/shared.js"></script>
   <script type="text/javascript" src="../js/zxcvbn.4.4.2.js"></script>
   <script type="text/javascript" src="../js/zxcvbn.3.5.js"></script>
 </body>
