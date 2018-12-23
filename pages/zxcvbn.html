@@ -115,7 +115,8 @@
       if (seconds > SECONDS_IN_DAY) return Math.round(seconds / SECONDS_IN_DAY) + " days";
       if (seconds > SECONDS_IN_HOUR) return Math.round(seconds / SECONDS_IN_HOUR) + " hours";
       if (seconds > SECONDS_IN_MINUTE) return Math.round(seconds / SECONDS_IN_MINUTE) + " minutes";
-      return Math.round(seconds) + " seconds";
+      if (seconds > 1) return Math.round(seconds) + " seconds";
+      return "less than a second"
     }
 
     function find_password_strength() {
