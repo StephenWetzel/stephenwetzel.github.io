@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>zxcvbn Demo</title>
+  <title>zxcvbn Demo - Password Strength Estimator</title>
   <style>
     .wrapper {
       display: grid;
@@ -86,7 +86,7 @@
     </div>
     <div class='mask'>mask: <input type='checkbox' id='toggle-mask' checked/></div>
     <div class='explanation'>
-      <p>Implementation of <a href='https://github.com/dropbox/zxcvbn'>Dropbox's zxcvbn</a>, comparing the old algorithm to the new one.</p>
+      <p>Implementation of <a href='https://github.com/dropbox/zxcvbn'>Dropbox's password strength estimator zxcvbn</a>, comparing the old algorithm to the new one.  I built this because I love zxcvbn, but I'm not a fan of the <a href='https://github.com/dropbox/zxcvbn/issues/135'>changes to calculating complexity</a>.</p>
       <br>
       <p>Here are some rough guidelines for speeds of different attacks.</p>
       <p>online attack on a service that ratelimits password auth attempts: <strong>100 / hour</strong></p>
