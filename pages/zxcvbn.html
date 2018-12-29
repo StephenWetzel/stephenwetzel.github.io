@@ -7,26 +7,27 @@
   <style>
     .wrapper {
       display: grid;
-      grid-template-areas: "input input"
+      grid-template-areas: "password-row password-row"
                            "old  new"
-                           "mask mask"
                            "explanation explanation";
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr;
       grid-gap: 1em;
     }
     .result {
-      border-radius: 1em;
-      padding: 1em;
-      margin: 0.5em;
       font-family: monospace;
       background-color: #333;
       color: #eee;
     }
-    .input {grid-area: input;}
+    .box {
+      border-radius: 1em;
+      padding: 1em;
+      box-sizing: border-box;
+    }
+    .password-box {width: 100%;}
+    .password-row {grid-area: password-row;}
     .old {grid-area: old;}
     .new {grid-area: new;}
-    .mask {grid-area: mask;}
     .explanation {
       grid-area: explanation;
       font-family: sans-serif;
@@ -34,13 +35,21 @@
     p {
       margin: 0.3em;
     }
+    #toggle-mask {
+      position: absolute;
+      top: 1.5em;
+      right: 1.5em;
+      cursor: pointer;
+      z-index: 1;
+    }
+
 
     @media (max-width: 500px) {
       .wrapper {
-        grid-template-areas: "input"
+        grid-template-columns: 1fr;
+        grid-template-areas: "password-row"
                              "old"
                              "new"
-                             "mask"
                              "explanation";
       }
       .result {
@@ -51,8 +60,11 @@
 </head>
 <body>
   <div class='wrapper'>
-    <input class='result input' id='password-input' type='password' placeholder='Password' />
-    <div class='result old'>
+    <div class='password-row'>
+      <input class='result box password-box' id='password-input' type='text' placeholder='Password' />
+      <span class='result' id='toggle-mask'>HIDE</span>
+    </div>
+    <div class='result box old'>
       <h3>zxcvbn 3.5</h3>
       <table>
         <tr><td>password:</td><td id='password-old'></td></tr>
@@ -68,7 +80,7 @@
       </table>
       <pre id='raw-old'></pre>
     </div>
-    <div class='result new'>
+    <div class='result box new'>
       <h3>zxcvbn 4.4.2</h3>
       <table>
         <tr><td>password:</td><td id='password-new'></td></tr>
@@ -84,7 +96,6 @@
       </table>
       <pre id='raw-new'></pre>
     </div>
-    <div class='mask'>mask: <input type='checkbox' id='toggle-mask' checked/></div>
     <div class='explanation'>
       <p>Implementation of <a href='https://github.com/dropbox/zxcvbn'>Dropbox's password strength estimator zxcvbn</a>, comparing the old algorithm to the new one.  I built this because I love zxcvbn, but I'm not a fan of the <a href='https://github.com/dropbox/zxcvbn/issues/135'>changes to calculating complexity</a>.</p>
       <br>
@@ -106,6 +117,7 @@
     SECONDS_IN_DAY = 60 * 60 * 24;
     SECONDS_IN_HOUR = 60 * 60;
     SECONDS_IN_MINUTE = 60;
+    var show_password = true;
 
     function convert_guesses_to_time(guesses, per_second) {
       seconds = guesses / 2 / per_second;
@@ -123,7 +135,7 @@
       password_input = document.getElementById('password-input').value
       zxcvbn_old = zxcvbn35(password_input);
       zxcvbn_new = zxcvbn442(password_input);
-      if (document.getElementById('toggle-mask').checked) {
+      if (!show_password) {
         zxcvbn_old.password = '****'
         zxcvbn_new.password = '****'
       }
@@ -159,9 +171,11 @@
       find_password_strength();
     }, false);
 
-    document.getElementById('toggle-mask').addEventListener('change', onToggleMaskChange);
+    document.getElementById('toggle-mask').addEventListener('click', onToggleMaskChange);
     function onToggleMaskChange(){
-      document.getElementById('password-input').type = this.checked ? 'password' : 'text';
+      show_password = !show_password
+      document.getElementById('password-input').type = show_password ? 'text' : 'password';
+      document.getElementById('toggle-mask').innerHTML = show_password ? 'HIDE' : 'SHOW';
       find_password_strength();
     }
   </script>
