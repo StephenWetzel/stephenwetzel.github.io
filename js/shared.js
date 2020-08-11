@@ -104,7 +104,7 @@ function getQueryParams()
     ii = 0;
     for (let value of params.get(key).split(','))
     {
-      outArray[ii] ??= {};
+      outArray[ii] = outArray[ii] ?? {};
       if (value === 'true') value = true
       if (value === 'false') value = false
       outArray[ii][key] = value;
@@ -121,7 +121,7 @@ function setQueryParams(inArray)
   {
     for (key of Object.keys(row))
     {
-      queryParams[key] ??= []
+      queryParams[key] = queryParams[key] ?? []
       queryParams[key].push(row[key])
     }
   }
