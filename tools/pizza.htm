@@ -6,17 +6,17 @@
 <style type="text/css">
 table {padding-bottom:20px;}
 table, th, td {
-	border: 1px solid black;
-	border-collapse: collapse;
+  border: 1px solid black;
+  border-collapse: collapse;
 }
 th {
-	padding-left:  1em;
-	padding-right: 1em;
-	padding-top:    .5em;
-	padding-bottom: .5em;
+  padding-left:  1em;
+  padding-right: 1em;
+  padding-top:    .5em;
+  padding-bottom: .5em;
 }
 tr:nth-child(even), thead {
-	background-color: #edd;
+  background-color: #edd;
 }
 body {max-width: initial;}
 </style>
@@ -56,100 +56,102 @@ var PIE_AREA = 8 * 8 * PI; //area of a benchmark 16" pizza
 var SLICE_AREA = PIE_AREA / 8; //8 slices in a normal pizza
 var INCHES_IN_SQFT = 12 * 12;
 
-//this array will hold the pizzas, the function calcPizzas will fill in the rest of the attributes for all pizzas listed here
-pizzas = [
-	{"qty": 1, "slice": false, "dia": 16, "price": 10},
-	{"qty": 1, "slice": false, "dia": 14, "price": 12},
-	{"qty": 1, "slice": true,  "dia": 16, "price": 2}
-];
+
+pizzaParams = getQueryParams();
 
 calc();
 
 function calc()
 {//a wrapper for the 3 main functions
-	getValuesFromTable(pizzas);
-	calcPizzas(pizzas);
-	buildTables(pizzas);
+  getValuesFromTable(pizzaParams);
+  pizzas = calcPizzas(pizzaParams);
+  buildTables(pizzas);
+  setQueryParams(pizzaParams);
 }
 
 function addPizza()
 {//add a new pizza to the array of pizzas, and then recald everything
-	var newPizza = document.getElementById('newPizza').rows[1]
-	pizzas.push({
-		'qty':   newPizza.cells[0].children[0].value,
-		'slice': newPizza.cells[1].children[0].checked,
-		'dia':   newPizza.cells[2].children[0].value,
-		'price': newPizza.cells[3].children[0].value
-		})
-	calc();
+  var newPizza = document.getElementById('newPizza').rows[1]
+  pizzaParams.push({
+    'qty':   newPizza.cells[0].children[0].value,
+    'slice': newPizza.cells[1].children[0].checked,
+    'diameter':   newPizza.cells[2].children[0].value,
+    'price': newPizza.cells[3].children[0].value
+    })
+  calc();
 }
 
 function removePizza(pizzaNum)
 {//remove this pizza from the array and then redraw table
-	pizzas.splice(pizzaNum, 1);
-	buildTables(pizzas);
+  pizzaParams.splice(pizzaNum, 1);
+  pizzas.splice(pizzaNum, 1);
+  buildTables(pizzas);
+  setQueryParams(pizzas);
 }
 
-function getValuesFromTable(pizzas)
-{//go through table and get user entered values, put them in our array of pizzas
-	var rows = document.getElementById('pizzaTable').rows;
-	
-	for (var ii = 1; ii < rows.length; ii++)
-	{//go through each row of table, skip header
-		pizzas[ii-1].qty =   rows[ii].cells[0].children[0].value;
-		pizzas[ii-1].slice = rows[ii].cells[1].children[0].checked;
-		pizzas[ii-1].dia =   rows[ii].cells[2].children[0].value;
-		pizzas[ii-1].price = rows[ii].cells[3].children[0].value;
-	}
+function getValuesFromTable(pizzaParams)
+{//go through table and get user entered values, put them in our array of pizzaParams
+  var rows = document.getElementById('pizzaTable').rows;
+
+  for (var ii = 1; ii < rows.length; ii++)
+  {//go through each row of table, skip header
+    pizzaParams[ii-1].qty =   rows[ii].cells[0].children[0].value;
+    pizzaParams[ii-1].slice = rows[ii].cells[1].children[0].checked;
+    pizzaParams[ii-1].diameter =   rows[ii].cells[2].children[0].value;
+    pizzaParams[ii-1].price = rows[ii].cells[3].children[0].value;
+  }
 }
 
-function calcPizzas(pizzas)
+function calcPizzas(pizzaParams)
 {//do the calculations needed for each pizza in the array
-	for (var ii = 0; ii < pizzas.length; ii++)
-	{//go through each pizza in array
-		var thisPizza = pizzas[ii];
-		
-		if (thisPizza.dia == '' || thisPizza.qty == '' || thisPizza.price == '') {}
-		else
-		{//the 3 key pieces of info are not blank, we can use them to calculate the rest
-			var radius = thisPizza.dia / 2;
-			thisPizza.area = PI * radius * radius * thisPizza.qty;
-			if (thisPizza.slice) { thisPizza.area /= 8; } //there are 8 slices in a canonical pizza
-			thisPizza.sqft        = thisPizza.area  / INCHES_IN_SQFT;
-			thisPizza.sqftPrice   = thisPizza.price / thisPizza.sqft;
-			thisPizza.slices      = thisPizza.area  / SLICE_AREA;
-			thisPizza.slicesPrice = thisPizza.price / thisPizza.slices;
-			thisPizza.pies        = thisPizza.area  / PIE_AREA;
-			thisPizza.piesPrice   = thisPizza.price / thisPizza.pies;
-		}
-	}
+  // pizzas = [...pizzaParams]; // we need to go deeper
+  pizzas = JSON.parse(JSON.stringify(pizzaParams));
+  for (var ii = 0; ii < pizzas.length; ii++)
+  {//go through each pizza in array
+    var thisPizza = pizzas[ii];
+
+    if (thisPizza.diameter == '' || thisPizza.qty == '' || thisPizza.price == '') {}
+    else
+    {//the 3 key pieces of info are not blank, we can use them to calculate the rest
+      var radius = thisPizza.diameter / 2;
+      thisPizza.area = PI * radius * radius * thisPizza.qty;
+      if (thisPizza.slice) { thisPizza.area /= 8; } //there are 8 slices in a canonical pizza
+      thisPizza.sqft        = thisPizza.area  / INCHES_IN_SQFT;
+      thisPizza.sqftPrice   = thisPizza.price / thisPizza.sqft;
+      thisPizza.slices      = thisPizza.area  / SLICE_AREA;
+      thisPizza.slicesPrice = thisPizza.price / thisPizza.slices;
+      thisPizza.pies        = thisPizza.area  / PIE_AREA;
+      thisPizza.piesPrice   = thisPizza.price / thisPizza.pies;
+    }
+  }
+  return pizzas;
 }
 
 function buildTables(pizzas)
 {//build the table of pizza info
-	
-	pizzaTable = "<table><thead><tr><th>Quantity</th><th>Slice?</th><th>Diameter</th><th>Total Price</th><th>Area (in^2)</th><th>Price / sqft</th><th>Slices Equivalent</th><th>Price / slice</th><th>Pie Equivalent</th><th>Price / pie</th><th> </th></tr></thead><tbody>";
-	
-	for (var ii = 0; ii < pizzas.length; ii++)
-	{//go through each pizza, add it as a row in the table
-		var thisPizza = pizzas[ii];
-		pizzaTable += "<tr><td><input type='text' size=3 value='"+thisPizza.qty+"'></td>";
-		pizzaTable += "<td><input type='checkbox'"
-		if (thisPizza.slice) pizzaTable += " checked";
-		pizzaTable += "></td>";
-		pizzaTable += "<td><input type='text' size=3 value='"+thisPizza.dia+"'></td>";
-		pizzaTable += "<td><input type='text' size=3 value='"+thisPizza.price+"'></td>";
-		pizzaTable += "<td>"+roundTo(thisPizza.area)+"</td>";
-		pizzaTable += "<td>"+price(thisPizza.sqftPrice)+"</td>";
-		pizzaTable += "<td>"+roundTo(thisPizza.slices)+"</td>";
-		pizzaTable += "<td>"+price(thisPizza.slicesPrice)+"</td>";
-		pizzaTable += "<td>"+roundTo(thisPizza.pies)+"</td>";
-		pizzaTable += "<td>"+price(thisPizza.piesPrice)+"</td>";
-		pizzaTable += "<td><input type='button' value='Delete' onclick='removePizza("+ii+")'></td>";
-	}
-	
-	pizzaTable += "</tbody></table>";
-	document.getElementById('pizzaTable').innerHTML = pizzaTable;	
+
+  pizzaTable = "<table><thead><tr><th>Quantity</th><th>Slice?</th><th>Diameter</th><th>Total Price</th><th>Area (in^2)</th><th>Price / sqft</th><th>Slices Equivalent</th><th>Price / slice</th><th>Pie Equivalent</th><th>Price / pie</th><th> </th></tr></thead><tbody>";
+
+  for (var ii = 0; ii < pizzas.length; ii++)
+  {//go through each pizza, add it as a row in the table
+    var thisPizza = pizzas[ii];
+    pizzaTable += "<tr><td><input type='text' size=3 value='"+thisPizza.qty+"'></td>";
+    pizzaTable += "<td><input type='checkbox'"
+    if (thisPizza.slice) pizzaTable += " checked";
+    pizzaTable += "></td>";
+    pizzaTable += "<td><input type='text' size=3 value='"+thisPizza.diameter+"'></td>";
+    pizzaTable += "<td><input type='text' size=3 value='"+thisPizza.price+"'></td>";
+    pizzaTable += "<td>"+roundTo(thisPizza.area)+"</td>";
+    pizzaTable += "<td>"+price(thisPizza.sqftPrice)+"</td>";
+    pizzaTable += "<td>"+roundTo(thisPizza.slices)+"</td>";
+    pizzaTable += "<td>"+price(thisPizza.slicesPrice)+"</td>";
+    pizzaTable += "<td>"+roundTo(thisPizza.pies)+"</td>";
+    pizzaTable += "<td>"+price(thisPizza.piesPrice)+"</td>";
+    pizzaTable += "<td><input type='button' value='Delete' onclick='removePizza("+ii+")'></td>";
+  }
+
+  pizzaTable += "</tbody></table>";
+  document.getElementById('pizzaTable').innerHTML = pizzaTable; 
 }
 
 -->
