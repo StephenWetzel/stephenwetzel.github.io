@@ -26,14 +26,18 @@ body {max-width: initial;}
 <form name="mainform" action="pizza.htm">
 <table id="pizzaTable"></table>
 <input type='button' value='Recalc' onclick='calc()'>
+<input type='checkbox' id='crustCheckbox' onclick='updateCrust()'>
+<label for="crustCheckbox">Exclude Crust</label>
+<input type='button' value='Clear' onclick='clearPizzas()'>
 
 <p>Add another pizza: </p>
 <table id="newPizza">
-<thead><tr><th>Quantity</th><th>Slice</th><th>Diameter</th><th>Price</th><th> </th></tr></thead>
+<thead><tr><th>Quantity</th><th>Diameter</th><th>Crust Width</th><th>Price</th><th>Slice</th><th> </th></tr></thead>
 <tr><td><input type='text' size=3 value=''></td>
+<td><input type='text' size=3 value=''></td>
+<td><input type='text' size=3 value=''></td>
+<td><input type='text' size=3 value=''></td>
 <td><input type='checkbox'></td>
-<td><input type='text' size=3 value=''></td>
-<td><input type='text' size=3 value=''></td>
 <td><input type='button' value='Add' onclick='addPizza()'></td></tr>
 </table>
 </form>
@@ -49,13 +53,16 @@ body {max-width: initial;}
 <script src="../js/shared.js"></script>
 <script type="text/javascript">
 <!--
-var link=document.mainform //short cut
-
 var PI = 3.1415926535897932384626433; //this level of precision is very necessary
-var PIE_AREA = 8 * 8 * PI; //area of a benchmark 16" pizza
-var SLICE_AREA = PIE_AREA / 8; //8 slices in a normal pizza
+var DEFAULT_CRUST_WIDTH = 1; //crust width in inches
+var PIE_RADIUS = 8; //radius of a normal pizza in inches
+var PIE_AREA_WITH_CRUST = PIE_RADIUS**2 * PI; //area of a benchmark 16" pizza
+var PIE_AREA_WITHOUT_CRUST = (PIE_RADIUS - DEFAULT_CRUST_WIDTH)**2 * PI; //area of a benchmark 16" pizza
 var INCHES_IN_SQFT = 12 * 12;
 
+var exclude_crust = true;
+var PIE_AREA = exclude_crust ? PIE_AREA_WITHOUT_CRUST : PIE_AREA_WITH_CRUST
+var SLICE_AREA = PIE_AREA / 8; //8 slices in a normal pizza
 
 pizzaParams = getQueryParams();
 
@@ -70,13 +77,15 @@ function calc()
 }
 
 function addPizza()
-{//add a new pizza to the array of pizzas, and then recald everything
+{//add a new pizza to the array of pizzas, and then recalc everything
+  //Quantity  Diameter  Crust Width Price Slice
   var newPizza = document.getElementById('newPizza').rows[1]
   pizzaParams.push({
     'qty':   newPizza.cells[0].children[0].value,
-    'slice': newPizza.cells[1].children[0].checked,
-    'diameter':   newPizza.cells[2].children[0].value,
-    'price': newPizza.cells[3].children[0].value
+    'diameter':   newPizza.cells[1].children[0].value,
+    'crust':   newPizza.cells[2].children[0].value,
+    'price': newPizza.cells[3].children[0].value,
+    'slice': newPizza.cells[4].children[0].checked
     })
   calc();
 }
@@ -86,7 +95,22 @@ function removePizza(pizzaNum)
   pizzaParams.splice(pizzaNum, 1);
   pizzas.splice(pizzaNum, 1);
   buildTables(pizzas);
+  setQueryParams(pizzaParams);
+}
+
+function clearPizzas()
+{//remove all pizzas
+  pizzaParams = [];
+  pizzas = [];
+  buildTables(pizzas);
   setQueryParams(pizzas);
+}
+
+function updateCrust()
+{
+  exclude_crust = document.getElementById('crustCheckbox').checked;
+  PIE_AREA = exclude_crust ? PIE_AREA_WITHOUT_CRUST : PIE_AREA_WITH_CRUST;
+  SLICE_AREA = PIE_AREA / 8; //8 slices in a normal pizza
 }
 
 function getValuesFromTable(pizzaParams)
@@ -96,24 +120,27 @@ function getValuesFromTable(pizzaParams)
   for (var ii = 1; ii < rows.length; ii++)
   {//go through each row of table, skip header
     pizzaParams[ii-1].qty =   rows[ii].cells[0].children[0].value;
-    pizzaParams[ii-1].slice = rows[ii].cells[1].children[0].checked;
-    pizzaParams[ii-1].diameter =   rows[ii].cells[2].children[0].value;
-    pizzaParams[ii-1].price = rows[ii].cells[3].children[0].value;
+    pizzaParams[ii-1].diameter = rows[ii].cells[1].children[0].value;
+    pizzaParams[ii-1].crust =   rows[ii].cells[2].children[0].value;
+    pizzaParams[ii-1].price =   rows[ii].cells[3].children[0].value;
+    pizzaParams[ii-1].slice = rows[ii].cells[4].children[0].checked;
   }
 }
 
 function calcPizzas(pizzaParams)
 {//do the calculations needed for each pizza in the array
   // pizzas = [...pizzaParams]; // we need to go deeper
+  updateCrust();
   pizzas = JSON.parse(JSON.stringify(pizzaParams));
-  for (var ii = 0; ii < pizzas.length; ii++)
+  for (let ii = 0; ii < pizzas.length; ii++)
   {//go through each pizza in array
-    var thisPizza = pizzas[ii];
+    let thisPizza = pizzas[ii];
 
     if (thisPizza.diameter == '' || thisPizza.qty == '' || thisPizza.price == '') {}
     else
     {//the 3 key pieces of info are not blank, we can use them to calculate the rest
-      var radius = thisPizza.diameter / 2;
+      let radius = thisPizza.diameter / 2;
+      radius = exclude_crust ? radius - thisPizza.crust : radius
       thisPizza.area = PI * radius * radius * thisPizza.qty;
       if (thisPizza.slice) { thisPizza.area /= 8; } //there are 8 slices in a canonical pizza
       thisPizza.sqft        = thisPizza.area  / INCHES_IN_SQFT;
@@ -130,17 +157,18 @@ function calcPizzas(pizzaParams)
 function buildTables(pizzas)
 {//build the table of pizza info
 
-  pizzaTable = "<table><thead><tr><th>Quantity</th><th>Slice?</th><th>Diameter</th><th>Total Price</th><th>Area (in^2)</th><th>Price / sqft</th><th>Slices Equivalent</th><th>Price / slice</th><th>Pie Equivalent</th><th>Price / pie</th><th> </th></tr></thead><tbody>";
+  pizzaTable = "<table><thead><tr><th>Quantity</th><th>Diameter</th><th>Crust Width</th><th>Total Price</th><th>Slice?</th><th>Area (in^2)</th><th>Price / sqft</th><th>Slices Equivalent</th><th>Price / slice</th><th>Pie Equivalent</th><th>Price / pie</th><th> </th></tr></thead><tbody>";
 
   for (var ii = 0; ii < pizzas.length; ii++)
   {//go through each pizza, add it as a row in the table
     var thisPizza = pizzas[ii];
     pizzaTable += "<tr><td><input type='text' size=3 value='"+thisPizza.qty+"'></td>";
+    pizzaTable += "<td><input type='text' size=3 value='"+thisPizza.diameter+"'></td>";
+    pizzaTable += "<td><input type='text' size=3 value='"+thisPizza.crust+"'></td>";
+    pizzaTable += "<td><input type='text' size=3 value='"+thisPizza.price+"'></td>";
     pizzaTable += "<td><input type='checkbox'"
     if (thisPizza.slice) pizzaTable += " checked";
     pizzaTable += "></td>";
-    pizzaTable += "<td><input type='text' size=3 value='"+thisPizza.diameter+"'></td>";
-    pizzaTable += "<td><input type='text' size=3 value='"+thisPizza.price+"'></td>";
     pizzaTable += "<td>"+roundTo(thisPizza.area)+"</td>";
     pizzaTable += "<td>"+price(thisPizza.sqftPrice)+"</td>";
     pizzaTable += "<td>"+roundTo(thisPizza.slices)+"</td>";
@@ -151,7 +179,12 @@ function buildTables(pizzas)
   }
 
   pizzaTable += "</tbody></table>";
-  document.getElementById('pizzaTable').innerHTML = pizzaTable; 
+  document.getElementById('pizzaTable').innerHTML = pizzaTable;
+
+  const inputs = document.querySelectorAll('input');
+  for (const input of inputs) {
+    input.addEventListener('change', calc);
+  }
 }
 
 -->
