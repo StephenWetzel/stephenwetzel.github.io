@@ -74,10 +74,6 @@ function filter_level_to_number(filter_level)
 
 function get_popular_article(filter_level)
 {
-  // article_promise = get_random_article_async()
-
-  // article_promise.then(function(article){ console.log(article.title) })
-  // get_inbound_links(article_promise.then(function(article){ console.log(article.title) }))
   loop_iteration = 0;
   required_links = filter_level_to_number(filter_level);
   while (true)
@@ -91,8 +87,6 @@ function get_popular_article(filter_level)
     console.log(`Inbound links: ${article_json.number_of_links} / required: ${required_links}`);
     if (article_json.number_of_links > filter_level_to_number(filter_level)) return article_json;
     console.log("Not enough links");
-
-    // TODO: loop until we have a good article
   }
 }
 
@@ -114,10 +108,6 @@ function display_article(article_json)
   article.innerHTML += `<td><a href='${article_json.content_urls.desktop.page}'>${article_json.title}</a> - <b>${article_json.description}</b> - ${article_json.extract} (${show_pop_score(article_json.number_of_links)})</td>`;
   // article.innerHTML += `</tr>`
   articles_div.appendChild(article);
-
-//article_json.content_urls.desktop.page
-
-
 }
 
 // TODO: add number of articles option to page
@@ -138,15 +128,10 @@ function get_list_of_articles()
     display_article(article_json);
   }
 }
-
 -->
 </script>
-
-
-
 </head>
 <body class="reading">
-<!-- <div id='articles'></div> -->
 <table id='articles'></table>
 <form name="mainform">
 Popularity: <input type='text' name='popularity' value='5'>
