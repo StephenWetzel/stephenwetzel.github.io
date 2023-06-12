@@ -15,28 +15,22 @@ body
 
 <script type="text/javascript">
 <!-- 
-function get_random_article() {
-  var random_article_url = 'https://en.wikipedia.org/api/rest_v1/page/random/summary';
-  var xhttp = new XMLHttpRequest();
-  xhttp.open("GET", random_article_url, false);
-  xhttp.setRequestHeader("Content-type", "application/json");
-  xhttp.send();
-  var response = JSON.parse(xhttp.responseText);
-  return response;
+async function get_random_article_async() {
+  const random_article_url = 'https://en.wikipedia.org/api/rest_v1/page/random/summary';
+  const response = await fetch(random_article_url);
+  const article_json = response.json();
+  console.log(`Async article title: ${article_json.title}`)
+  return article_json;
 }
 
-function get_inbound_links(article_title) {
-  var inbound_link_url = 'https://en.wikipedia.org/w/api.php?action=query&origin=*&prop=linkshere&format=json&lhlimit=max&lhnamespace=0&titles=' + article_title;
-  var xhttp = new XMLHttpRequest();
-  xhttp.open("GET", inbound_link_url, false);
-  xhttp.setRequestHeader("Content-type", "application/json");
-  xhttp.send();
-  var response = JSON.parse(xhttp.responseText);
-  return response;
+async function get_inbound_links_async(article_title) {
+  console.log (`Async getting links for title ${article_title}`)
+  const inbound_link_url = 'https://en.wikipedia.org/w/api.php?action=query&origin=*&prop=linkshere&format=json&lhlimit=max&lhnamespace=0&titles=' + article_title;
+  const response = await fetch(inbound_link_url);
+  return response.json();
 }
 
-function filter_level_to_number(filter_level)
-{
+function filter_level_to_number(filter_level) {
   // 0    1
   // 1    2
   // 2    4
@@ -52,42 +46,41 @@ function filter_level_to_number(filter_level)
   return number;
 }
 
-function get_popular_article(filter_level)
-{
+function find_number_of_links(inbound_links_json) {
+  // inbound_links_json.query.pages['14090283'].linkshere.length
+  if (!Object.values(inbound_links_json.query.pages)[0]["linkshere"]) {
+    // no inbound links found
+    return 0;
+  } else {
+    return Object.values(inbound_links_json.query.pages)[0].linkshere.length;
+  }
+}
+
+async function get_popular_article(filter_level) {
   loop_iteration = 0;
   required_links = filter_level_to_number(filter_level);
-  while (true)
-  {
+
+  while (true) {
     loop_iteration++;
-    article_json = get_random_article();
+
+    article_json = await get_random_article_async();
     console.log(`Article title: ${article_json.title}`);
-    inbound_links_json = get_inbound_links(article_json.title);
-    // inbound_links_json.query.pages['14090283'].linkshere.length
-    if (!Object.values(inbound_links_json.query.pages)[0]["linkshere"])
-    {// no inbound links found
-      article_json.number_of_links = 0;
-    }
-    else
-    {
-      article_json.number_of_links = Object.values(inbound_links_json.query.pages)[0].linkshere.length;
-    }
+    inbound_links_json = await get_inbound_links_async(article_json.title);
+    article_json.number_of_links = find_number_of_links(inbound_links_json);
+
     console.log(`Inbound links: ${article_json.number_of_links} / required: ${required_links}`);
     if (article_json.number_of_links > filter_level_to_number(filter_level)) return article_json;
     console.log("Not enough links");
   }
 }
 
-function show_pop_score(number_of_links)
-{
+function show_pop_score(number_of_links) {
   return `${number_of_links} / ${Math.round(Math.log2(number_of_links) * 100.0) / 100.0}`
 }
 
-function display_article(article_json)
-{
+function display_article(article_json) {
   const articles_div = document.getElementById('articles');
-
   const article = document.createElement("tr");
-  html_string = '';
   html_string = '';
   html_string += `<td>`;
   if (!!document.mainform.show_thumbnails.checked) html_string += `<a href='${article_json.content_urls.desktop.page}'><img src = '${article_json.thumbnail.source}'></a>`;
@@ -102,15 +95,13 @@ function display_article(article_json)
 
 // TODO: add prepend/append new articles option
 // TODO: show inbound links as either number or color
-// TODO: show articles as they are found
+// TODO: make inbound link count link to "what links here page"
 
-function get_list_of_articles()
-{
+async function get_list_of_articles() {
   num = document.mainform.num_of_articles.value;
   filter_level = document.mainform.popularity.value;
-  for (let ii = 0; ii < num; ii++)
-  {
-    article_json = get_popular_article(filter_level);
+  for (let ii = 0; ii < num; ii++) {
+    article_json = await get_popular_article(filter_level);
     display_article(article_json);
   }
 }
