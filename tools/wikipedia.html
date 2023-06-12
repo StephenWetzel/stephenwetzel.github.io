@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html><head><title>Random wikipedia articles</title>
+<meta charset="UTF-8">
+<link rel=stylesheet href="../css/style.css" type="text/css">
+<style type="text/css">
+.buttons
+{
+  width: 9em;
+}
+body
+{
+  max-width: initial;
+}
+</style>
+
+<script type="text/javascript">
+<!-- 
+var popularity_index = 5;
+
+async function fetchAsync (url) {
+  let response = await fetch(url);
+  let data = await response.json();
+  return data;
+}
+
+
+async function githubUsers() {
+  let response = await fetch('https://api.github.com/users')
+  let users = await response.json()
+  console.log(users)
+  return users;
+}
+
+
+function get_random_article() {
+  var random_article_url = 'https://en.wikipedia.org/api/rest_v1/page/random/summary';
+  var xhttp = new XMLHttpRequest();
+  xhttp.open("GET", random_article_url, false);
+  xhttp.setRequestHeader("Content-type", "application/json");
+  xhttp.send();
+  var response = JSON.parse(xhttp.responseText);
+  return response;
+}
+
+
+function get_inbound_links(article_title) {
+  var inbound_link_url = 'https://en.wikipedia.org/w/api.php?action=query&origin=*&prop=linkshere&format=json&lhlimit=max&lhnamespace=0&titles=' + article_title;
+  var xhttp = new XMLHttpRequest();
+  xhttp.open("GET", inbound_link_url, false);
+  xhttp.setRequestHeader("Content-type", "application/json");
+  xhttp.send();
+  var response = JSON.parse(xhttp.responseText);
+  return response;
+}
+
+function filter_level_to_number(filter_level)
+{
+  // 0    1
+  // 1    2
+  // 2    4
+  // 3    8
+  // 4   16
+  // 5   32
+  // 6   64
+  // 7  128
+  // 8  256
+  // 9  512 (500)
+  number = 2**filter_level;
+  if (number > 500) number = 500;
+  return number;
+}
+
+
+
+function get_popular_article(filter_level)
+{
+  // article_promise = get_random_article_async()
+
+  // article_promise.then(function(article){ console.log(article.title) })
+  // get_inbound_links(article_promise.then(function(article){ console.log(article.title) }))
+  loop_iteration = 0;
+  required_links = filter_level_to_number(filter_level);
+  while (true)
+  {
+    loop_iteration++;
+    article_json = get_random_article();
+    console.log(`Article title: ${article_json.title}`);
+    inbound_links_json = get_inbound_links(article_json.title);
+    // inbound_links_json.query.pages['14090283'].linkshere.length
+    article_json.number_of_links = Object.values(inbound_links_json.query.pages)[0].linkshere.length;
+    console.log(`Inbound links: ${article_json.number_of_links} / required: ${required_links}`);
+    if (article_json.number_of_links > filter_level_to_number(filter_level)) return article_json;
+    console.log("Not enough links");
+
+    // TODO: loop until we have a good article
+  }
+}
+
+function show_pop_score(number_of_links)
+{
+  return `${number_of_links} / ${Math.round(Math.log2(number_of_links) * 100.0) / 100.0}`
+}
+
+function display_article(article_json)
+{
+  const articles_div = document.getElementById('articles');
+
+  const article = document.createElement("tr");
+  article.innerHTML = '';
+  article.innerHTML += `<td>`
+  if (!!document.mainform.show_thumbnails.checked) article.innerHTML += `<a href='${article_json.content_urls.desktop.page}'><img src = '${article_json.thumbnail.source}'></a>`
+
+  article.innerHTML += ` &nbsp;</td>`
+  article.innerHTML += `<td><a href='${article_json.content_urls.desktop.page}'>${article_json.title}</a> - <b>${article_json.description}</b> - ${article_json.extract} (${show_pop_score(article_json.number_of_links)})</td>`;
+  // article.innerHTML += `</tr>`
+  articles_div.appendChild(article);
+
+//article_json.content_urls.desktop.page
+
+
+}
+
+// TODO: add number of articles option to page
+// TODO: add show thumbnails option to page article_json.thumbnail.source
+// TODO: add prepend/append new articles option
+// TODO: show inbound links as either number or color
+// TODO: option for showing inboudn links/popularity score
+// TODO: show articles as they are found
+// TODO: fix linkshere not found bug
+
+function get_list_of_articles()
+{
+  num = document.mainform.num_of_articles.value;
+  filter_level = document.mainform.popularity.value;
+  for (let ii = 0; ii < num; ii++)
+  {
+    article_json = get_popular_article(filter_level);
+    display_article(article_json);
+  }
+}
+
+-->
+</script>
+
+
+
+</head>
+<body class="reading">
+<!-- <div id='articles'></div> -->
+<table id='articles'></table>
+<form name="mainform">
+Popularity: <input type='text' name='popularity' value='5'>
+Number of articles: <input type='text' name='num_of_articles' value='1'>
+<input type='button' value='Go' class='buttons' onclick='get_list_of_articles()'>
+<br>
+<label><input type='checkbox' id='show_thumbnails'>Show images</label>&nbsp;&nbsp;
+<label><input type='checkbox' id='show_pop_score' checked>Show (number of inbound links/popularity score)</label>
+
+</form>
+<hr>
+<p>Random Wikipedia articles, but filtering out the small ones.</p>
+
+</body></html>
