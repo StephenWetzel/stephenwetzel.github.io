@@ -100,13 +100,16 @@ function display_article(article_json)
   const articles_div = document.getElementById('articles');
 
   const article = document.createElement("tr");
-  article.innerHTML = '';
-  article.innerHTML += `<td>`
-  if (!!document.mainform.show_thumbnails.checked) article.innerHTML += `<a href='${article_json.content_urls.desktop.page}'><img src = '${article_json.thumbnail.source}'></a>`
+  html_string = '';
+  html_string = '';
+  html_string += `<td>`;
+  if (!!document.mainform.show_thumbnails.checked) html_string += `<a href='${article_json.content_urls.desktop.page}'><img src = '${article_json.thumbnail.source}'></a>`;
+  html_string += ` &nbsp;</td>`;
+  html_string += `<td><a href='${article_json.content_urls.desktop.page}'>${article_json.title}</a> - <b>${article_json.description}</b> - ${article_json.extract}`;
+  if (!!document.mainform.show_pop_score.checked) html_string += ` (${show_pop_score(article_json.number_of_links)})`;
+  html_string += `</td>`;
 
-  article.innerHTML += ` &nbsp;</td>`
-  article.innerHTML += `<td><a href='${article_json.content_urls.desktop.page}'>${article_json.title}</a> - <b>${article_json.description}</b> - ${article_json.extract} (${show_pop_score(article_json.number_of_links)})</td>`;
-  // article.innerHTML += `</tr>`
+  article.innerHTML = html_string;
   articles_div.appendChild(article);
 }
 
@@ -114,7 +117,6 @@ function display_article(article_json)
 // TODO: add show thumbnails option to page article_json.thumbnail.source
 // TODO: add prepend/append new articles option
 // TODO: show inbound links as either number or color
-// TODO: option for showing inboudn links/popularity score
 // TODO: show articles as they are found
 // TODO: fix linkshere not found bug
 
