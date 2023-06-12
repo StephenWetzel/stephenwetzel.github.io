@@ -15,23 +15,6 @@ body
 
 <script type="text/javascript">
 <!-- 
-var popularity_index = 5;
-
-async function fetchAsync (url) {
-  let response = await fetch(url);
-  let data = await response.json();
-  return data;
-}
-
-
-async function githubUsers() {
-  let response = await fetch('https://api.github.com/users')
-  let users = await response.json()
-  console.log(users)
-  return users;
-}
-
-
 function get_random_article() {
   var random_article_url = 'https://en.wikipedia.org/api/rest_v1/page/random/summary';
   var xhttp = new XMLHttpRequest();
@@ -41,7 +24,6 @@ function get_random_article() {
   var response = JSON.parse(xhttp.responseText);
   return response;
 }
-
 
 function get_inbound_links(article_title) {
   var inbound_link_url = 'https://en.wikipedia.org/w/api.php?action=query&origin=*&prop=linkshere&format=json&lhlimit=max&lhnamespace=0&titles=' + article_title;
@@ -69,8 +51,6 @@ function filter_level_to_number(filter_level)
   if (number > 500) number = 500;
   return number;
 }
-
-
 
 function get_popular_article(filter_level)
 {
@@ -120,8 +100,6 @@ function display_article(article_json)
   articles_div.appendChild(article);
 }
 
-// TODO: add number of articles option to page
-// TODO: add show thumbnails option to page article_json.thumbnail.source
 // TODO: add prepend/append new articles option
 // TODO: show inbound links as either number or color
 // TODO: show articles as they are found
