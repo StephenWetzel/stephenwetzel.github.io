@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html><head><title>Random interesting Wikipedia articles</title>
+<meta charset="UTF-8">
+<link rel=stylesheet href="../css/style.css" type="text/css">
+<style type="text/css">
+.buttons
+{
+  width: 9em;
+}
+body
+{
+  max-width: initial;
+}
+</style>
+
+<script type="text/javascript">
+<!-- 
+async function get_random_article_async() {
+  const random_article_url = 'https://en.wikipedia.org/api/rest_v1/page/random/summary';
+  const response = await fetch(random_article_url);
+  const article_json = response.json();
+  console.log(`Async article title: ${article_json.title}`)
+  return article_json;
+}
+
+async function get_inbound_links_async(article_title) {
+  console.log (`Async getting links for title ${article_title}`)
+  const inbound_link_url = 'https://en.wikipedia.org/w/api.php?action=query&origin=*&prop=linkshere&format=json&lhlimit=max&lhnamespace=0&titles=' + article_title;
+  const response = await fetch(inbound_link_url);
+  return response.json();
+}
+
+function filter_level_to_number(filter_level) {
+  // 0    1
+  // 1    2
+  // 2    4
+  // 3    8
+  // 4   16
+  // 5   32
+  // 6   64
+  // 7  128
+  // 8  256
+  // 9  512 (500)
+  number = 2**filter_level;
+  if (number > 500) number = 500;
+  return number;
+}
+
+function find_number_of_links(inbound_links_json) {
+  // inbound_links_json.query.pages['14090283'].linkshere.length
+  if (!Object.values(inbound_links_json.query.pages)[0]["linkshere"]) {
+    // no inbound links found
+    return 0;
+  } else {
+    return Object.values(inbound_links_json.query.pages)[0].linkshere.length;
+  }
+}
+
+async function get_popular_article(filter_level) {
+  loop_iteration = 0;
+  required_links = filter_level_to_number(filter_level);
+
+  while (true) {
+    loop_iteration++;
+
+    article_json = await get_random_article_async();
+    console.log(`Article title: ${article_json.title}`);
+    inbound_links_json = await get_inbound_links_async(article_json.title);
+    article_json.number_of_links = find_number_of_links(inbound_links_json);
+
+    console.log(`Inbound links: ${article_json.number_of_links} / required: ${required_links}`);
+    if (article_json.number_of_links > filter_level_to_number(filter_level)) return article_json;
+    console.log("Not enough links");
+  }
+}
+
+function show_pop_score(number_of_links) {
+  return `${number_of_links} / ${Math.round(Math.log2(number_of_links) * 100.0) / 100.0}`
+}
+
+function display_article(article_json) {
+  const articles_div = document.getElementById('articles');
+  const article = document.createElement("tr");
+  html_string = '';
+  html_string += `<td>`;
+  if (!!document.mainform.show_thumbnails.checked) html_string += `<a href='${article_json.content_urls.desktop.page}'><img src = '${article_json.thumbnail.source}'></a>`;
+  html_string += ` &nbsp;</td>`;
+  html_string += `<td><a href='${article_json.content_urls.desktop.page}'>${article_json.title}</a> - <b>${article_json.description}</b> - ${article_json.extract}`;
+  if (!!document.mainform.show_pop_score.checked) html_string += ` (${show_pop_score(article_json.number_of_links)})`;
+  html_string += `</td>`;
+
+  article.innerHTML = html_string;
+  articles_div.appendChild(article);
+}
+
+// TODO: add prepend/append new articles option
+// TODO: show inbound links as either number or color
+// TODO: make inbound link count link to "what links here page"
+
+async function get_list_of_articles() {
+  num = document.mainform.num_of_articles.value;
+  filter_level = document.mainform.popularity.value;
+  for (let ii = 0; ii < num; ii++) {
+    article_json = await get_popular_article(filter_level);
+    display_article(article_json);
+  }
+}
+-->
+</script>
+</head>
+<body class="reading">
+<table id='articles'></table>
+<form name="mainform">
+Popularity: <input type='text' name='popularity' style='width:5em' value='5'>&nbsp;&nbsp;&nbsp;
+Number of articles: <input type='text' name='num_of_articles' style='width:5em' value='1'>&nbsp;&nbsp;&nbsp;
+<input type='button' value='Go' class='buttons' onclick='get_list_of_articles()'>
+<br>
+<label><input type='checkbox' id='show_thumbnails'>Show images</label>&nbsp;&nbsp;
+<label><input type='checkbox' id='show_pop_score' checked>Show (number of inbound links/popularity score)</label>
+
+</form>
+<hr>
+<p>Random Wikipedia articles, which you can also get from <a href="https://en.wikipedia.org/wiki/Special:Random">this link</a>.  However, this page will attempt to filter out the smaller and less interesting ones.  It does this based on how many other Wikipedia articles link to an article, with the idea being pages without many links from other pages aren't that important.  You can adjust how strict the filter is with the popularity input, which ranges from 0 to 9, where 0 is 1 link required, and 9 is 500 links required, and increasing the index by 1 will double the number of required links.  There's also an option to show the number of links and corresponding index so you can experiment.  </p>
+</body></html>
