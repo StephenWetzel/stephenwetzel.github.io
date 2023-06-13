@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><head><title>Random wikipedia articles</title>
+<html><head><title>Random interesting Wikipedia articles</title>
 <meta charset="UTF-8">
 <link rel=stylesheet href="../css/style.css" type="text/css">
 <style type="text/css">
@@ -111,8 +111,8 @@ async function get_list_of_articles() {
 <body class="reading">
 <table id='articles'></table>
 <form name="mainform">
-Popularity: <input type='text' name='popularity' value='5'>
-Number of articles: <input type='text' name='num_of_articles' value='1'>
+Popularity: <input type='text' name='popularity' style='width:5em' value='5'>&nbsp;&nbsp;&nbsp;
+Number of articles: <input type='text' name='num_of_articles' style='width:5em' value='1'>&nbsp;&nbsp;&nbsp;
 <input type='button' value='Go' class='buttons' onclick='get_list_of_articles()'>
 <br>
 <label><input type='checkbox' id='show_thumbnails'>Show images</label>&nbsp;&nbsp;
@@ -120,6 +120,5 @@ Number of articles: <input type='text' name='num_of_articles' value='1'>
 
 </form>
 <hr>
-<p>Random Wikipedia articles, but filtering out the small ones.</p>
-
+<p>Random Wikipedia articles, which you can also get from <a href="https://en.wikipedia.org/wiki/Special:Random">this link</a>.  However, this page will attempt to filter out the smaller and less interesting ones.  It does this based on how many other Wikipedia articles link to an article, with the idea being pages without many links from other pages aren't that important.  You can adjust how strict the filter is with the popularity input, which ranges from 0 to 9, where 0 is 1 link required, and 9 is 500 links required, and increasing the index by 1 will double the number of required links.  There's also an option to show the number of links and corresponding index so you can experiment.  </p>
 </body></html>
