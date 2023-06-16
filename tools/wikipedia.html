@@ -15,11 +15,15 @@ body
 
 <script type="text/javascript">
 <!-- 
+
+const ARTICLE_DEBOUNCE_TIME = 3000; // ms
+var last_got_articles_dt = new Date() - ARTICLE_DEBOUNCE_TIME;
+
+
 async function get_random_article_async() {
   const random_article_url = 'https://en.wikipedia.org/api/rest_v1/page/random/summary';
   const response = await fetch(random_article_url);
   const article_json = response.json();
-  console.log(`Async article title: ${article_json.title}`)
   return article_json;
 }
 
@@ -64,11 +68,10 @@ async function get_popular_article(filter_level) {
     loop_iteration++;
 
     article_json = await get_random_article_async();
-    console.log(`Article title: ${article_json.title}`);
     inbound_links_json = await get_inbound_links_async(article_json.title);
     article_json.number_of_links = find_number_of_links(inbound_links_json);
 
-    console.log(`Inbound links: ${article_json.number_of_links} / required: ${required_links}`);
+    console.log(`Article title: ${article_json.title}, inbound links: ${article_json.number_of_links} / required: ${required_links}`);
     if (article_json.number_of_links > filter_level_to_number(filter_level)) return article_json;
     console.log("Not enough links");
   }
@@ -79,13 +82,19 @@ function show_pop_score(number_of_links) {
 }
 
 function display_article(article_json) {
+
+  if (typeof article_json.content_urls === 'undefined') {
+    console.log(`No article url found for ${article_json.title}`);
+    return;
+  }
+
   const articles_div = document.getElementById('articles');
   const article = document.createElement("tr");
   html_string = '';
   html_string += `<td>`;
-  if (!!document.mainform.show_thumbnails.checked) html_string += `<a href='${article_json.content_urls.desktop.page}'><img src = '${article_json.thumbnail.source}'></a>`;
+  if (!!document.mainform.show_thumbnails.checked) html_string += `<a target="_blank" href='${article_json.content_urls.desktop.page}'><img src = '${article_json.thumbnail.source}'></a>`;
   html_string += ` &nbsp;</td>`;
-  html_string += `<td><a href='${article_json.content_urls.desktop.page}'>${article_json.title}</a> - <b>${article_json.description}</b> - ${article_json.extract}`;
+  html_string += `<td><a target="_blank" href='${article_json.content_urls.desktop.page}'>${article_json.title}</a> - <b>${article_json.description}</b> - ${article_json.extract}`;
   if (!!document.mainform.show_pop_score.checked) html_string += ` (${show_pop_score(article_json.number_of_links)})`;
   html_string += `</td>`;
 
@@ -96,29 +105,63 @@ function display_article(article_json) {
 // TODO: add prepend/append new articles option
 // TODO: show inbound links as either number or color
 // TODO: make inbound link count link to "what links here page"
+// TODO: make pop index 0 represent 0 links?
+// TODO: show "500+" for pop index 9
+// TODO: fix button sizes on mobile
+// TODO: loading spinner at bottom
+// TODO: floating controls when using infinite scroll
 
 async function get_list_of_articles() {
+  if ((new Date() - last_got_articles_dt) < ARTICLE_DEBOUNCE_TIME) {
+    console.log('Debounce');
+    return;
+  }
+  last_got_articles_dt = new Date();
   num = document.mainform.num_of_articles.value;
   filter_level = document.mainform.popularity.value;
   for (let ii = 0; ii < num; ii++) {
     article_json = await get_popular_article(filter_level);
-    display_article(article_json);
+    if (Object.keys(article_json).length > 0 ) display_article(article_json);
+    article_json = {};
   }
 }
+
+document.addEventListener('DOMContentLoaded', function(e) {
+    document.addEventListener('scroll', function(e) {
+        let documentHeight = document.body.scrollHeight;
+        let currentScroll = window.scrollY + window.innerHeight;
+        // When the user is [modifier]px from the bottom, fire the event.
+        let modifier = 300; 
+        if(currentScroll + modifier > documentHeight) {
+            console.log('You are at the bottom!')
+            if (!!document.mainform.infinite_scroll.checked) get_list_of_articles();
+        }
+    })
+})
+
+
 -->
 </script>
 </head>
+
 <body class="reading">
-<table id='articles'></table>
+
+
+<div style='position: fixed; bottom: 0px;'>
 <form name="mainform">
 Popularity: <input type='text' name='popularity' style='width:5em' value='5'>&nbsp;&nbsp;&nbsp;
-Number of articles: <input type='text' name='num_of_articles' style='width:5em' value='1'>&nbsp;&nbsp;&nbsp;
+Number of articles: <input type='text' name='num_of_articles' style='width:5em' value='10'>&nbsp;&nbsp;&nbsp;
 <input type='button' value='Go' class='buttons' onclick='get_list_of_articles()'>
 <br>
-<label><input type='checkbox' id='show_thumbnails'>Show images</label>&nbsp;&nbsp;
-<label><input type='checkbox' id='show_pop_score' checked>Show (number of inbound links/popularity score)</label>
+<label><input type='checkbox' id='show_thumbnails' checked>Show images</label>&nbsp;&nbsp;
+<label><input type='checkbox' id='show_pop_score' checked>Show (number of inbound links/popularity score)</label>&nbsp;&nbsp;
+<label><input type='checkbox' id='infinite_scroll'>Infinite scroll</label>&nbsp;&nbsp;
+<label><input type='checkbox' id='test_id'>Test label</label>&nbsp;&nbsp;
+</form></div>
 
-</form>
-<hr>
 <p>Random Wikipedia articles, which you can also get from <a href="https://en.wikipedia.org/wiki/Special:Random">this link</a>.  However, this page will attempt to filter out the smaller and less interesting ones.  It does this based on how many other Wikipedia articles link to an article, with the idea being pages without many links from other pages aren't that important.  You can adjust how strict the filter is with the popularity input, which ranges from 0 to 9, where 0 is 1 link required, and 9 is 500 links required, and increasing the index by 1 will double the number of required links.  There's also an option to show the number of links and corresponding index so you can experiment.  </p>
+<hr>
+
+<table id='articles'></table>
+
 </body></html>
