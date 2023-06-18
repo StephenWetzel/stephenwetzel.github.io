@@ -65,6 +65,7 @@ async function get_popular_article(filter_level) {
   required_links = filter_level_to_number(filter_level);
 
   while (true) {
+    document.getElementById('loading_spinner').style.display='inline-block';
     loop_iteration++;
 
     article_json = await get_random_article_async();
@@ -108,22 +109,25 @@ function display_article(article_json) {
 // TODO: make pop index 0 represent 0 links?
 // TODO: show "500+" for pop index 9
 // TODO: fix button sizes on mobile
-// TODO: loading spinner at bottom
-// TODO: floating controls when using infinite scroll
 
 async function get_list_of_articles() {
   if ((new Date() - last_got_articles_dt) < ARTICLE_DEBOUNCE_TIME) {
     console.log('Debounce');
     return;
   }
+
+  document.getElementById('loading_spinner').style.display='inline-block';
   last_got_articles_dt = new Date();
   num = document.mainform.num_of_articles.value;
   filter_level = document.mainform.popularity.value;
   for (let ii = 0; ii < num; ii++) {
+    document.getElementById('loading_spinner').style.display='inline-block';
     article_json = await get_popular_article(filter_level);
     if (Object.keys(article_json).length > 0 ) display_article(article_json);
     article_json = {};
   }
+  document.getElementById('loading_spinner').style.display='none';
+
 }
 
 document.addEventListener('DOMContentLoaded', function(e) {
@@ -133,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function(e) {
         // When the user is [modifier]px from the bottom, fire the event.
         let modifier = 300; 
         if(currentScroll + modifier > documentHeight) {
-            console.log('You are at the bottom!')
+            console.log('At bottom')
             if (!!document.mainform.infinite_scroll.checked) get_list_of_articles();
         }
     })
@@ -147,21 +151,24 @@ document.addEventListener('DOMContentLoaded', function(e) {
 <body class="reading">
 
 
-<div style='position: fixed; bottom: 0px;'>
+<div style='position: fixed; bottom: 0px; background-color: #fff;'>
 <form name="mainform">
 Popularity: <input type='text' name='popularity' style='width:5em' value='5'>&nbsp;&nbsp;&nbsp;
 Number of articles: <input type='text' name='num_of_articles' style='width:5em' value='10'>&nbsp;&nbsp;&nbsp;
 <input type='button' value='Go' class='buttons' onclick='get_list_of_articles()'>
+<div id='loading_spinner' class='lds-ring' style='display: none;'><div></div><div></div><div></div><div></div></div>
 <br>
 <label><input type='checkbox' id='show_thumbnails' checked>Show images</label>&nbsp;&nbsp;
 <label><input type='checkbox' id='show_pop_score' checked>Show (number of inbound links/popularity score)</label>&nbsp;&nbsp;
 <label><input type='checkbox' id='infinite_scroll'>Infinite scroll</label>&nbsp;&nbsp;
-<label><input type='checkbox' id='test_id'>Test label</label>&nbsp;&nbsp;
+<!-- <label><input type='checkbox' id='test_id'>Test label</label>&nbsp;&nbsp; -->
 </form></div>
 
 <p>Random Wikipedia articles, which you can also get from <a href="https://en.wikipedia.org/wiki/Special:Random">this link</a>.  However, this page will attempt to filter out the smaller and less interesting ones.  It does this based on how many other Wikipedia articles link to an article, with the idea being pages without many links from other pages aren't that important.  You can adjust how strict the filter is with the popularity input, which ranges from 0 to 9, where 0 is 1 link required, and 9 is 500 links required, and increasing the index by 1 will double the number of required links.  There's also an option to show the number of links and corresponding index so you can experiment.  </p>
 <hr>
 
 <table id='articles'></table>
+
+
 
 </body></html>
