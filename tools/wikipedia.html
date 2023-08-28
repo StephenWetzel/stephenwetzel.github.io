@@ -110,6 +110,7 @@ function display_article(article_json) {
 // TODO: make pop index 0 represent 0 links?
 // TODO: show "500+" for pop index 9
 // TODO: fix button sizes on mobile
+// TODO: clear all button
 
 async function get_list_of_articles() {
   if ((new Date() - last_got_articles_dt) < ARTICLE_DEBOUNCE_TIME) {
