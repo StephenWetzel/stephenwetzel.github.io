@@ -33,8 +33,9 @@ body
 <!-- TODO: Buttons for common number of hashes (1000, 1M, 1B, etc), maybe drop down for multiplier instead? -->
 <tr><td>&nbsp;</td></tr>
 
-<tr><td class="labels">Chance of no collisions: </td><td><input type="number" name="probability_different" style="width:100%" value="" onchange="calcCollisionChance()"></td></tr>
-<tr><td class="labels">Chance of collision 1 in x: </td><td><input type="number" name="one_in_chance_collision" style="width:100%" value="" onchange="calcCollisionChance()"></td></tr>
+<tr><td class="labels">Number of possible values: </td><td><input type="number" name="num_possible_values" style="width:100%" value=""></td></tr>
+<tr><td class="labels">Chance of no collisions: </td><td><input type="number" name="probability_different" style="width:100%" value=""></td></tr>
+<tr><td class="labels">Chance of collision 1 in x: </td><td><input type="number" name="one_in_chance_collision" style="width:100%" value=""></td></tr>
 </table>
 
 </form></div>
@@ -140,7 +141,9 @@ body
 </table>
 
 <hr>
-<p>Calculate collisions between cryptographic hashes</p>
+<p>This tool calculates how likely it is that when generating random strings of characters you will get two with the same value (a collision).  When generating a large number of these random values the chances of a collision goes up quickly, often much faster than expected.   For example, if you're generating random 4 digit numbers, there are 10,000 possibilities, and so the chance of 1 of those random numbers being the same as another is 1 in 10,000.  However, every time you generate a new number you must compare it to all prior numbers, and so the number of comparisons can get very large, which can lead to the chance of a collision being higher than expected.  The Birthday Paradox is named after the fact that it only takes 23 people before the chance that 2 of them will share the same birthday to be over 50%.  Which is not a paradox but is much lower than people generally expect.</p>
+
+<p>I made this tool mainly to show how much better using the full space of lower case letters and numbers (36 characters) is than just using hex (16 characters) when generating random IDs.  Developers often default to generating random IDs in hex, because it's easy, but using the full space of the alphabet greater reduces the chance that two randomly generated IDs will the same, and including upper and lower case letters reduces it much more.  As an example, if you're going to have 6 character IDs, the chance of a collision if you generate 1000 is 2.9% with hex, 0.023% with alphanumeric, and 0.00088% with upper and lower alphanumeric.  You could generate over 50,000 of the case sensative IDs and still have less of a chance of a collision (2.18%) than if you used just hex and only generated 1000 (2.93%).</p>
 </body>
 
 
@@ -157,6 +160,7 @@ function calcCollisionChance() {
   var probability_different = collisionChance(num_hashes, total_possible)
   var one_in_chance_collision = (1 / (1 - probability_different))
 
+  document.simpleCollisions.num_possible_values.value = total_possible
   document.simpleCollisions.probability_different.value = probability_different
   document.simpleCollisions.one_in_chance_collision.value = one_in_chance_collision
 }
