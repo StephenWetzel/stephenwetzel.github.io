@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html><head><title>Hash Collision Calculator</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel=stylesheet href="../css/style.css" type="text/css">
+<style type="text/css">
+.buttons
+{
+  width: 9em;
+}
+body
+{
+  max-width: initial;
+}
+.num-chars, .possible-chars {
+  width: 5em;
+  text-align: center;
+}
+.result, {
+  width: 10em;
+  text-align: center;
+}
+tr:nth-child(even) {
+  background-color: #ddffdd;
+}
+tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+tfoot td, tfoot th {
+  padding-top: 12px;
+}
+input.result {
+  width: 20em;
+}
+
+</style>
+
+</head>
+
+<body class="reading" onLoad="calcCollisionChance(); calcCollisionChanceTable()">
+<h3>Single Example</h3>
+<form name="simpleCollisions">
+<table><tr><td class="labels">&nbsp;</td><td>&nbsp;</td></tr>
+<!-- TODO: Better names, characters? char set? objects? -->
+<!-- TODO: Buttons for common char sets (hex, lower, lower+upper, base64, etc) -->
+<tr><td class="labels">Possible Characters: </td><td><input type="number" name="possible_chars" style="width:100%" value="16" onchange="calcCollisionChance()"></td></tr>
+<tr><td class="labels">Number of Characters: </td><td><input type="number" name="num_chars" style="width:100%" value="8" onchange="calcCollisionChance()"></td></tr>
+<tr><td class="labels">Number of Items: </td><td><input type="number" name="num_hashes" style="width:100%" value="1000" onchange="calcCollisionChance()"></td></tr>
+<!-- TODO: Buttons for common number of hashes (1000, 1M, 1B, etc), maybe drop down for multiplier instead? -->
+<tr><td>&nbsp;</td></tr>
+
+<tr><td class="labels">Number of possible values: </td><td><input type="number" name="num_possible_values" style="width:100%" value=""></td></tr>
+<tr><td class="labels">Chance of no collisions: </td><td><input type="number" name="probability_different" style="width:100%" value=""></td></tr>
+<tr><td class="labels">Chance of collision 1 in x: </td><td><input type="number" name="one_in_chance_collision" style="width:100%" value=""></td></tr>
+</table>
+
+</form></div>
+
+&nbsp;
+
+<h3>Table of Examples</h3>
+<div class="options" style="margin: 15px 0; display: flex; gap: 20px; flex-wrap: wrap;">
+  <div>
+    <label>Show: 
+      <select id="collisionType" onchange="calcCollisionChanceTable()">
+        <option value="collision">Chance of collision</option>
+        <option value="no_collision" selected>Chance of no collision</option>
+      </select>
+    </label>
+  </div>
+  <div>
+    <label>Format: 
+      <select id="probabilityFormat" onchange="calcCollisionChanceTable()">
+        <option value="decimal">Decimal (0 to 1)</option>
+        <option value="percentage">Percentage</option>
+        <option value="odds">1 in x odds</option>
+      </select>
+    </label>
+  </div>
+</div>
+
+<table id="collisionTable">
+  <thead>
+    <tr>
+      <th>&nbsp;</th>
+      <th>&nbsp;</th>
+      <th>Scenario 1</th>
+      <th>Scenario 2</th>
+      <th>Scenario 3</th>
+      <th>Scenario 4</th>
+    </tr>
+    <tr>
+      <th>Possible Chars</th>
+      <th>Num Chars</th>
+      <th><input type="text" title="Number of items generated in scenario 1" class="col-header" data-col="0" value="1,000"></th>
+      <th><input type="text" title="Number of items generated in scenario 2" class="col-header" data-col="1" value="1,000,000"></th>
+      <th><input type="text" title="Number of items generated in scenario 3" class="col-header" data-col="2" value="1,000,000,000"></th>
+      <th><input type="text" title="Number of items generated in scenario 4" class="col-header" data-col="3" value="1,000,000,000,000"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr data-row="0">
+      <td><input type="number" title="How many possible characters there are to choose from?" class="possible-chars" value="2"></td>
+      <td><input type="number" title="How many characters long will our string be?" class="num-chars" value="8"></td>
+      <td><input type="text" class="result" data-col="0"></td>
+      <td><input type="text" class="result" data-col="1"></td>
+      <td><input type="text" class="result" data-col="2"></td>
+      <td><input type="text" class="result" data-col="3"></td>
+    </tr>
+    <tr data-row="1">
+      <td><input type="number" title="How many possible characters there are to choose from?" class="possible-chars" value="16"></td>
+      <td><input type="number" title="How many characters long will our string be?" class="num-chars" value="8"></td>
+      <td><input type="text" class="result" data-col="0"></td>
+      <td><input type="text" class="result" data-col="1"></td>
+      <td><input type="text" class="result" data-col="2"></td>
+      <td><input type="text" class="result" data-col="3"></td>
+    </tr>
+    <tr data-row="2">
+      <td><input type="number" title="How many possible characters there are to choose from?" class="possible-chars" value="26"></td>
+      <td><input type="number" title="How many characters long will our string be?" class="num-chars" value="8"></td>
+      <td><input type="text" class="result" data-col="0"></td>
+      <td><input type="text" class="result" data-col="1"></td>
+      <td><input type="text" class="result" data-col="2"></td>
+      <td><input type="text" class="result" data-col="3"></td>
+    </tr>
+    <tr data-row="3">
+      <td><input type="number" title="How many possible characters there are to choose from?" class="possible-chars" value="36"></td>
+      <td><input type="number" title="How many characters long will our string be?" class="num-chars" value="8"></td>
+      <td><input type="text" class="result" data-col="0"></td>
+      <td><input type="text" class="result" data-col="1"></td>
+      <td><input type="text" class="result" data-col="2"></td>
+      <td><input type="text" class="result" data-col="3"></td>
+    </tr>
+    <tr data-row="4">
+      <td><input type="number" title="How many possible characters there are to choose from?" class="possible-chars" value="62"></td>
+      <td><input type="number" title="How many characters long will our string be?" class="num-chars" value="8"></td>
+      <td><input type="text" class="result" data-col="0"></td>
+      <td><input type="text" class="result" data-col="1"></td>
+      <td><input type="text" class="result" data-col="2"></td>
+      <td><input type="text" class="result" data-col="3"></td>
+    </tr>
+    <tr data-row="5">
+      <td><input type="number" title="How many possible characters there are to choose from?" class="possible-chars" value="64"></td>
+      <td><input type="number" title="How many characters long will our string be?" class="num-chars" value="8"></td>
+      <td><input type="text" class="result" data-col="0"></td>
+      <td><input type="text" class="result" data-col="1"></td>
+      <td><input type="text" class="result" data-col="2"></td>
+      <td><input type="text" class="result" data-col="3"></td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td>Set all num chars:</td>
+      <td><input type="number" id="setAllNumChars" class="num-chars" value="8" onchange="setAllNumChars()"></td>
+  </tfoot>
+</table>
+
+<hr>
+<p>This tool calculates how likely it is that when generating random strings of characters you will get two with the same value (a collision).  When generating a large number of these random values the chances of a collision goes up quickly, often much faster than expected.   For example, if you're generating random 4 digit numbers, there are 10,000 possibilities, and so the chance of any one of those random numbers being the same as another is 1 in 10,000.  However, every time you generate a new number you must compare it to all prior numbers, and so the number of comparisons can get very large, which can lead to the chance of a collision being higher than expected.  The Birthday Paradox describes the surprising fact that it only takes 23 people before the chance that two of them will share the same birthday to be over 50%.  That is not a paradox, but the number is much lower than people generally expect.</p>
+
+<p>I made this tool mainly to show how much better using the full space of lowercase letters and numbers (36 characters) is than just using hex (16 characters) when generating random IDs.  Developers often default to generating random IDs in hex because it's easy, but using the full space of the alphabet greatly reduces the chance that two randomly generated IDs will be the same, and including upper and lowercase letters reduces it much more.  As an example, if you're going to have 6 character IDs, the chance of a collision if you generate 1000 is 2.9% with hex, 0.023% with alphanumeric, and 0.00088% with upper and lower alphanumeric.  You could generate over 50,000 of the case sensative IDs and still have a lower chance of a collision (2.18%) than if you used just hex and only generated 1000 (2.93%).</p>
+
+<p>Note this tool is using native javascript numbers, which have a precision limit of about 15 decimal places.  When showing the chance of no collisions and using values that give a very small chance of a collision you'll see 1, when really the answer is a very small number less than 1.  Just know that the chance of a collision is never 0, and so the chance of no collision is never truly 1.  Viewing the chance of a collision (rather than the chance of no collision) should never round to 0.
+</body>
+
+
+<script type="text/javascript">
+<!-- 
+
+function calcCollisionChance() {
+  var possible_chars = document.simpleCollisions.possible_chars.value
+  var num_chars = document.simpleCollisions.num_chars.value
+  var num_hashes = document.simpleCollisions.num_hashes.value
+  var total_possible = calcTotalPossible(possible_chars, num_chars)
+
+  // p = 1 / e^(n^2 / 2*T)
+  // var probability_different = collisionChance(num_hashes, total_possible)
+  var collision_chance = collisionChance(num_hashes, total_possible)
+  // var one_in_chance_collision = (1 / (1 - probability_different))
+  var one_in_chance_collision = (1 / collision_chance)
+
+  document.simpleCollisions.num_possible_values.value = total_possible
+  document.simpleCollisions.probability_different.value = 1 - collision_chance
+  document.simpleCollisions.one_in_chance_collision.value = one_in_chance_collision
+}
+
+
+function setAllNumChars() {
+  new_num_of_chars = document.getElementById('setAllNumChars').value 
+
+  document.querySelectorAll('#collisionTable tbody tr').forEach((row, rowIndex) => {
+    row.querySelector('.num-chars').value = new_num_of_chars;
+  });
+  calcCollisionChanceTable();
+
+}
+
+function calcTotalPossible(alphabet_size, char_count) {
+  return alphabet_size**char_count;
+}
+
+function collisionChance(num_generated, total_possible) {
+  // Old version, rounds very small chances
+  // return 1 / Math.exp(num_generated**2 / (2 * total_possible));
+  return -Math.expm1( -1 * (num_generated**2) / (2 * total_possible))
+}
+
+function stripCommas(number) {
+  const thousandSeparator = (1000).toLocaleString().replace(/\d/g, '')[0];
+  return parseFloat(number.replace(new RegExp(`\\${thousandSeparator}`, 'g'), ''))
+}
+
+function addCommas(number) {
+  if (number < 1000) return number;
+  return number.toLocaleString();
+}
+
+function roundToSignificantFigures(number, sigFigs = 2) {
+  if (!isFinite(number) || number === 0) return number;
+
+  const absNumber = Math.abs(number);
+  const exponent = Math.floor(Math.log10(absNumber));
+  const factor = Math.pow(10, sigFigs - 1 - exponent);
+
+  return Math.round(number * factor) / factor;
+}
+
+function toPct(chance) {
+  return `${100.0 * chance}%`;
+}
+
+function toOneIn(chance) {
+  return 1 / chance;
+}
+
+function formatBasedOnSelections(chance) {
+  const show_collision = document.getElementById('collisionType').value === 'collision';
+  const format = document.getElementById('probabilityFormat').value;
+
+  chance = show_collision ? chance : 1 - chance
+  if (format == 'percentage') {
+    chance = toPct(chance)
+  } else if (format == 'odds') {
+    chance = addCommas(toOneIn(chance))
+  }
+  return chance
+}
+
+document.getElementById('collisionTable').addEventListener('input', calcCollisionChanceTable);
+
+function calcCollisionChanceTable() {
+  console.log("Calc")
+  const hashValues = Array.from(document.querySelectorAll('.col-header')).map(input => stripCommas(input.value) || 0);
+  document.querySelectorAll('#collisionTable tbody tr').forEach((row, rowIndex) => {
+    const possible_chars = row.querySelector('.possible-chars').value;
+    const num_chars = row.querySelector('.num-chars').value;
+    row.querySelectorAll('.result').forEach((cell, colIndex) => {
+      const hashCount = hashValues[colIndex];
+      var total_possible = calcTotalPossible(possible_chars, num_chars)
+      collision_chance = collisionChance(hashCount, total_possible)
+      cell.value = formatBasedOnSelections(collision_chance)
+    });
+  });
+
+  document.querySelectorAll('.col-header').forEach(header => {
+    header.value = addCommas(stripCommas(header.value));
+  });
+}
+
+
+-->
+</script>
+
+
+
+</html>
